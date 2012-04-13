@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import redis
 import json
+import sys
 import scheduler # there's lots we can reuse here. :)
 
 """
@@ -42,6 +43,8 @@ G ("FINAL"): top two of E and F (1 4 robot match)
 
 """
 
+MATCH_ZONES = 4 # you never know
+
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 def GetTopSixteenTeamsByLeaguePoints():
@@ -72,21 +75,51 @@ def GetTopSixteenTeamsByLeaguePoints():
 def GetTopTwoTeamsFromMatch(match_no):
   """
   returns the top two teams from the given match number (index in org.srobo.matches)
+  as a list of TLAS (as strings)
   """
+  def GetScoreFromTuple(a):
+    return a[0] # see below, temp    
+    
+  matches_len = r.llen("org.srobo.matches")
+  
+  if match_no not in range(matches_len):
+    print """[schedule-finals] FATAL ERROR - somehow GetTopTwoTeamsFromMatch was called with match_no = {0}, 
+              which is out of range!""".format(matches_no)
+    sys.exit(1)
+  
+  temp = [] # list of tuples (score, tla)
+  
+  this_match = match_from_ms(r.get("org.srobo.matches")[match_no]) # OPTIMISE
+  
+  for i in range(MATCH_ZONES):
+    this_zone_score = r.get("org.srobo.scores.match.{0}.{1}.game_points".format(match_no, i))
+    
+    this_zone_tla = this_match["teams"][i]
+    
+    temp.append((this_zone_score, this_zone_tla))
+  
+  temp.sort(cmp = GetScoreFromTuple, reverse = True)
+  
+  # now temp[0] and [1] are the top two teams:
+  return [temp[0][1], temp[1][1]]  
+  
   
 def ScheduleQuarterFinals():
   """
-  Schedules the quater finals (see above)
+  Schedules the quarter finals (see above)
+  This includes updating the nmber of scheduled knockout matches
   """
   
 def ScheduleSemiFinals():
   """
   Schedules the semi finals (see above)
+  This includes updating the nmber of scheduled knockout matches
   """
   
 def ScheduleFinal():
   """
   Schedules the final (see above)
+  This includes updating the nmber of scheduled knockout matches
   """
   
 def main():
