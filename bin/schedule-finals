@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import redis
 import json
+import scheduler # there's lots we can reuse here. :)
 
 """
 This script will schedule the finals, which are structured as detailed below,
@@ -10,6 +11,9 @@ matches have been scheduled thus far (org.srobo.matches.knockout_matches_schedul
 and politely schedule the next set.
 
 If there is no next set, you will be informed of that as well. ;)
+
+Should you need to reschedule some set of matches, set org.srobo.matches.knockout_matches_scheduled
+to 4, 6, or 7 depending on whether you want to reschedule the quarter-finals, semi-finals or final respectively.
 
 ----------------
 
@@ -39,3 +43,52 @@ G ("FINAL"): top two of E and F (1 4 robot match)
 """
 
 r = redis.Redis(host='localhost', port=6379, db=0)
+
+def GetTopSixteenTeamsByLeaguePoints():
+  """
+  returns a sorted list containing the TLAs (as strings) of the
+  top sixteen teams by league points
+  """
+
+
+def GetTopTwoTeamsFromMatch(match_no):
+  """
+  returns the top two teams from the given match number (index in org.srobo.matches)
+  """
+  
+def ScheduleQuarterFinals():
+  """
+  Schedules the quater finals (see above)
+  """
+  
+def ScheduleSemiFinals():
+  """
+  Schedules the semi finals (see above)
+  """
+  
+def ScheduleFinal():
+  """
+  Schedules the final (see above)
+  """
+  
+def main():
+  """
+  Determines how many knockout matches have been scheduled and schedules the next set
+  """
+  matches_scheduled = int(r.get("org.srobo.matches.knockout_matches_scheduled"))
+  
+  if matches_scheduled == 0:
+    ScheduleQuaterFinals()
+  elif matches_scheduled == 4:
+    ScheduleSemiFinals()
+  elif matches_scheduled == 6:
+    ScheduleFinal()
+  elif matches_scheduled == 7:
+    print "All knockout matches have been scheduled, nothing to do."
+  else:
+     # WTF?
+     print "[schedule-finals] Unexpected ({0}) number of knockout matches have been scheduled!".format(matches_scheduled)
+  
+  
+if __name__ == "__main__":
+  main()
