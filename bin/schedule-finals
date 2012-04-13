@@ -172,6 +172,7 @@ def ScheduleSemiFinals():
   Schedules the semi finals (see above)
   This includes updating the number of scheduled knockout matches
   """
+  print "[schedule-finals] Scheduling the semi finals..."
   len_matches = r.llen("org.srobo.matches")
   
   # get the top two teams from (A and B) and (C and D)
@@ -195,12 +196,45 @@ def ScheduleSemiFinals():
     m = create_match(match_start_time, teams, 0)
     
     match_start_time += match_length * 60
+    
+  persist_to_redis(matches)
+  r.set("org.srobo.matches.knockout_matches_scheduled", 6)  
+  print "[schedule-finals] Done."
   
 def ScheduleFinal():
   """
   Schedules the final (see above)
   This includes updating the nmber of scheduled knockout matches
   """
+  print "[schedule-finals] Scheduling the final!"
+    
+  len_matches = r.llen("org.srobo.matches")
+  
+  # get the top two teams from (A and B) and (C and D)
+  # match A..D is len_matches - 4..1 respectively.
+  top_teams = []
+  for i in range(2):
+    top_teams.append(GetTopTwoTeamsFromMatch(4 - i)
+  
+  # top_teams contains the top two teams from matched A..D in order (list of lists)
+  match_start_time = GetMatchStartTimeOfMatch(7)
+  
+  matches = []
+  for match_counter in range(1):
+    teams = []
+    for team_index in range(1):
+      for top_team_index in range(2):
+        teams.append(top_teams[team_index * 2][0][top_team_index])
+        
+    # teams now holds the four teams selected for match indicated by match_counter    
+      
+    m = create_match(match_start_time, teams, 0)
+    
+    match_start_time += match_length * 60
+    
+  persist_to_redis(matches)
+  r.set("org.srobo.matches.knockout_matches_scheduled", 6)  
+  print "[schedule-finals] Done."
   
 def main():
   """
