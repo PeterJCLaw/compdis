@@ -399,7 +399,7 @@ def ScheduleFinal():
   # get the top two teams from E and F
   top_teams = []
   for i in range(2):
-    top_teams.append(GetTopTwoTeamsFromMatch(i)
+    top_teams.append(GetTopTwoTeamsFromMatch(i))
   
   # top teams is a 2 list of 2 lists containing the top two teams from each match
   match_start_time = GetMatchStartTimeOfMatch(7)
