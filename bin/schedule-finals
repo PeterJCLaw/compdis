@@ -79,7 +79,7 @@ def GetLeagueScore(tla):
   """
   returns the league score of team tla
   """
-    return r.get("org.srobo.scores.team." + tla) 
+  return r.get("org.srobo.scores.team." + tla) 
   
 def GetTotalGameScore(tla):   
   """ 
