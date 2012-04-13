@@ -437,6 +437,9 @@ def main():
   """
   Determines how many knockout matches have been scheduled and schedules the next set
   """
+  if not r.exists("org.srobo.matches.knockout_matches_scheduled"):
+    r.set("org.srobo.matches.knockout_matches_scheduled", 0)
+  
   matches_scheduled = int(r.get("org.srobo.matches.knockout_matches_scheduled"))
   
   if matches_scheduled == 0:
