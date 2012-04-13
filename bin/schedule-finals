@@ -226,7 +226,7 @@ def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
         if input_str == 'yes':
           decision_confirmed = True
           decision_reached = True
-        elif: input_str == 'no':
+        elif input_str == 'no':
           decision_confirmed = False
           decision_reached = True
         else:
@@ -249,7 +249,7 @@ def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
         for (tla, a, b, c) in big_tuples:
           if tla == input_str:
             teams_proceeding.append(tla)
-            print "Added " + tla " to the teams PROCEEDING!"
+            print "Added " + tla + " to the teams PROCEEDING!"
             teams_entered += 1
             continue          
       
@@ -293,9 +293,9 @@ def GetTopTwoTeamsFromMatch(match_no):
   return ResolveDraws(match["teams"], 2, match_no)  
   
 def create_match(start_time, teams, delay):
-  return dict{"time":start_time,
+  return dict("time":start_time,
               "teams": teams,
-              "delay": 0}
+              "delay": 0)
   
 def GetStartTimeOfMatch(knockout_match_no):
   """
