@@ -50,6 +50,18 @@ MATCH_ZONES = 4 # you never know
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 
+def AppendToMatches(matches):
+  """
+  appends the given list of matches (as python dicts) to org.srobo.matches
+  """
+  match_strings = []
+  
+  for m in matches:
+    match_strings.append(match_to_ms(m))
+    
+  for m_str in match_strings:
+    r.rpush("org.srobo.matches", m_str)
+
 def GetGameScore(tla, match_no):
   """
   returns the game score of the team tla for match_no
