@@ -2,4 +2,40 @@
 import redis
 import json
 
+"""
+This script will schedule the finals, which are structured as detailed below,
+
+usage: schedule-finals takes no arguments nor options. It will determine how many knockout (final)
+matches have been scheduled thus far (org.srobo.matches.knockout_matches_scheduled),
+and politely schedule the next set.
+
+If there is no next set, you will be informed of that as well. ;)
+
+----------------
+
+Each match takes has 8 minutes, of which 7 are structured as with league matches.
+The spare minute will be placed between matches (such that there is a minute of "downtime" between
+consecutive final matches
+16 top teams (in terms of league points) to play
+
+(4 4-robot matches) 
+A: 1, 5, 9, 13
+B: 2, 6, 10, 14
+C: 3, 7, 11, 15
+D: 4, 8, 12, 16
+
+(where 1 is the highest scoring team and 16 is the lowest scoring team of the teams that got in)
+
+the top two from each match then play
+
+(2 4-robot matches)
+E: top two of A vs top two of B
+F: top two of C vs top two of D
+
+the top two from each match then play THE FINAL
+
+G ("FINAL"): top two of E and F (1 4 robot match)
+
+"""
+
 r = redis.Redis(host='localhost', port=6379, db=0)
