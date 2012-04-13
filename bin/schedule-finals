@@ -109,15 +109,13 @@ def create_match(start_time, teams, delay):
               "teams": teams,
               "delay": 0}
   
-def ScheduleQuarterFinals():
+def GetStartTimeOfMatch(knockout_match_no):
   """
-  Schedules the quarter finals (see above)
-  This includes updating the nmber of scheduled knockout matches
+  Returns the start time in competition time for the given knockout_match_no,
+  counting from zero.
   """
-  top_sixteen_tlas = GetTopSixteenTeamsByLeaguePoints()
-  
   events_len = r.llen("org.srobo.events")
-  first_match_start_time = None
+  match_start_time = None
 
   for i in range(events_len):
     event = r.lindex("org.srobo.events", i)
@@ -128,14 +126,25 @@ def ScheduleQuarterFinals():
       first_match_start_time = r.get("org.srobo.events." + event + ".start"
       break
       
-  if first_match_start_time == None:
+  if match_start_time == None:
     print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
     sys.exit(2)
-    
-    
-  # now have the desired start realtime for the matches.
+       
+  # now have the desired start realtime for the given match_no.
   # need to magic this into competition time:
-  start_time_comeptition = first_match_start_time - int(r.get("org.srobo.time.start"))
+  first_knockout_match_start_time = match_start_time - int(r.get("org.srobo.time.start"))
+
+  return first_knockout_match_start_time + (match_no * match_length)
+
+def ScheduleQuarterFinals():
+  """
+  Schedules the quarter finals (see above)
+  This includes updating the nmber of scheduled knockout matches
+  """
+  print "Scheduling the quarter finals..."
+  top_sixteen_tlas = GetTopSixteenTeamsByLeaguePoints()
+  
+  start_time_comeptition = GetStartTimeOfMatch(0)
   
   matches = []
   
@@ -153,13 +162,15 @@ def ScheduleQuarterFinals():
     
   persist_to_redis(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 4)  
+  print "Done."
   
   
 def ScheduleSemiFinals():
   """
   Schedules the semi finals (see above)
-  This includes updating the nmber of scheduled knockout matches
+  This includes updating the number of scheduled knockout matches
   """
+  
   
 def ScheduleFinal():
   """
