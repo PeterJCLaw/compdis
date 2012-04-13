@@ -47,8 +47,26 @@ r = redis.Redis(host='localhost', port=6379, db=0)
 def GetTopSixteenTeamsByLeaguePoints():
   """
   returns a sorted list containing the TLAs (as strings) of the
-  top sixteen teams by league points
+  top sixteen teams by league points, ordered with best team first
   """
+  def GetLeagueScoreFromTLA(tla):
+    return r.get("org.srobo.teams." + tla) 
+ 
+  # strategy: get /all/ the teams, sort them by league points, truncate to 16, return
+  team_count = r.llen("org.srobo.teams")
+  
+  TLAS = []
+  for i in range(1, team_count + 1):
+    # get at org.srobo.teams.str(i).tla, put it into a list of TLAS
+    TLAS.append(r.get("org.srobo.teams.{0}.tla".format(i)))
+
+  TLAS.sort(cmp = GetLeagueScoreFromTLA)
+  
+  # tacky:
+  while len(TLAS) > 16
+    del TLAS[-1]
+    
+  return TLAS  
 
 
 def GetTopTwoTeamsFromMatch(match_no):
