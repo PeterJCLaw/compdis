@@ -135,7 +135,7 @@ def ScheduleQuarterFinals():
     
   # now have the desired start realtime for the matches.
   # need to magic this into competition time:
-  start_time_comeptition = first_match_start_time # FIXME
+  start_time_comeptition = first_match_start_time - int(r.get("org.srobo.time.start"))
   
   matches = []
   
