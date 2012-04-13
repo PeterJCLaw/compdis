@@ -105,7 +105,7 @@ def GetTotalGameScore(tla):
     
   return total
 
-def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
+def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   """
   This function resolves draws in the given tla_list, returning a list of TLAs of length teams_wanted.
   In the event that any tie breaking must occur, diagnostics will be outputted.
