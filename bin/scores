@@ -1,6 +1,6 @@
 #!/bin/env python
 
-import redis, shlex
+import redis, shlex, json
 
 HOST = "localhost"
 PORT = 6379
@@ -16,13 +16,12 @@ def get_parts(data):
 	return tuple(lexer)
 
 def split_match(data):
-	a = data.split(',')
-	res = {'mtime':a[0],
-	       'teamz0':a[1],
-	       'teamz1':a[2],
-	       'teamz2':a[3],
-	       'teamz3':a[4],
-	       'matNo':a[5]}
+	a = json.loads(data)
+	res = {'mtime':a["time"],
+	       'teamz0':a["teams"][0],
+	       'teamz1':a["teams"][1],
+	       'teamz2':a["teams"][2],
+	       'teamz3':a["teams"][3]}
 	return res
 
 def game_points(score):
@@ -37,7 +36,7 @@ def game_points(score):
 def print_match(match):
 	print('Match {0}'.format(match))
 	try:
-		mat = split_match(actor.lindex('{0}.matches'.format(BASE), match - 1))
+		mat = split_match(actor.lindex('{0}.matches'.format(BASE), match))
 	except AttributeError:
 		print('There is no expected match {0}'.format(match))
 		return
@@ -138,9 +137,10 @@ def zone_entry(mod,match,z,zone):
 	tzone = val_entry(mod,'\tZone: ',zone['tzone'])
 	tbucket = val_entry(mod,'\tBucket: ',zone['tbucket'])
 	nbuckets = val_entry(mod,'\tNo. Buckets: ',zone['nbuckets'])
-	if trobot == zone['trobot'] and tzone == zone['tzone'] and tbucket == zone['tbucket'] and nbuckets == zone['nbuckets']:
-		return False
-	actor.hmset('{0}.scores.match.{1}.{2}'.format(BASE,match,z),{'trobot':trobot,'tzone':tzone,'tbucket':tbucket,'nbuckets':nbuckets})
+	if actor.exists('{0}.scores.match.{1}.{2}'.format(BASE,match,z)):
+		if trobot == zone['trobot'] and tzone == zone['tzone'] and tbucket == zone['tbucket'] and nbuckets == zone['nbuckets']:
+			return False
+	actor.hmset('{0}.scores.match.{1}.{2}'.format(BASE,match,z),{'trobot':trobot,'tzone':tzone,'tbucket':tbucket,'nbuckets':nbuckets,'game_points':game_points([match,z,trobot,tzone,tbucket,nbuckets])})
 	return True
 	
 def check_match(match):
@@ -164,7 +164,7 @@ def check_match(match):
 		print('WARNING! Too many buckets in this match! ({0})'.format(buckets))
 
 def match_rank(match,sub):
-	mat = split_match(actor.lindex('{0}.matches'.format(BASE), match - 1))
+	mat = split_match(actor.lindex('{0}.matches'.format(BASE), match))
 	zpoints = dict()
 	for z in range(4):
 		zone = actor.hgetall('{0}.scores.match.{1}.{2}'.format(BASE,match,z))
@@ -179,6 +179,7 @@ def match_rank(match,sub):
 			actor.decr('{0}.scores.team.{1}'.format(BASE,mat['teamz{0}'.format(zord[z])]),scored)
 		else:
 			actor.incr('{0}.scores.team.{1}'.format(BASE,mat['teamz{0}'.format(zord[z])]),scored)
+			actor.hset('{0}.scores.match.{1}.{2}'.format(BASE,match,zord[z]),'league_points',scored)
 		if z != len(zord)-1:
 			if zpoints['{0}'.format(z)] != zpoints['{0}'.format(z+1)]:
 				scored = 4-z-1
@@ -186,19 +187,21 @@ def match_rank(match,sub):
 def commands():
 	print("Possible commands: \n[S]core\n[M]odify\n[R]esults\n[H]elp\n[Q]uit")
 
-commands()
-while True:
-	str = raw_input("CMD: ")
-	str = str.capitalize()
-	if str == 'S' or str == 'Score':
-		modify(False)
-	elif str == 'M' or str == 'Modify':
-		modify(True)
-	elif str == 'R' or str == 'Results':
-		results()
-	elif str == 'H' or str == 'Help':
-		commands()
-	elif str == 'Q' or str == 'Quit':
-		quit()
-	else:
-		print('Erm... What? Type \'H\' for a list of commands I understand')
+
+if __name__ == "__main__":
+    commands()
+    while True:
+        str = raw_input("CMD: ")
+        str = str.capitalize()
+        if str == 'S' or str == 'Score':
+            modify(False)
+        elif str == 'M' or str == 'Modify':
+            modify(True)
+        elif str == 'R' or str == 'Results':
+            results()
+        elif str == 'H' or str == 'Help':
+            commands()
+        elif str == 'Q' or str == 'Quit':
+            quit()
+        else:
+            print('Erm... What? Type \'H\' for a list of commands I understand')
