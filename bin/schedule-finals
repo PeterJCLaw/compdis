@@ -293,9 +293,9 @@ def GetTopTwoTeamsFromMatch(match_no):
   return ResolveDraws(match["teams"], 2, match_no)  
   
 def create_match(start_time, teams, delay):
-  return dict("time":start_time,
+  return dict({"time":start_time,
               "teams": teams,
-              "delay": 0)
+              "delay": 0})
   
 def GetStartTimeOfMatch(knockout_match_no):
   """
@@ -311,7 +311,7 @@ def GetStartTimeOfMatch(knockout_match_no):
     event_name = r.get("org.srobo.events." + event + ".name")
     
     if event_name == "final":
-      first_match_start_time = r.get("org.srobo.events." + event + ".start"
+      first_match_start_time = r.get("org.srobo.events." + event + ".start")
       break
       
   if match_start_time == None:
