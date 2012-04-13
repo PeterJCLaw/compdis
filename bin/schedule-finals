@@ -17,6 +17,7 @@ Should you need to reschedule some set of matches, set org.srobo.matches.knockou
 to 0, 4, or 6 depending on whether you want to reschedule the quarter-finals, semi-finals or final respectively.
 
 NB: THIS SCRIPT DEPENDS ON NO MATCHES BEING SCHEDULED EXCEPT FINALS ONCE THE FINALS HAVE STARTED!!
+(ie, it expects that the last N (N <= 7) items in org.srobo.matches are finals matches)
 
 ----------------
 
@@ -49,15 +50,53 @@ MATCH_ZONES = 4 # you never know
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 
+def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
+  """
+  This function resolves draws in the given tla_list, returning a list of TLAs of length teams_wanted.
+  In the event that any tie breaking must occur, diagnostics will be outputted.
+  match_nos must be either -1 (in which case we assume we're starting on league points) and 
+  teams_wanted is unrestricted, OR
+  an index in org.sobo.matches, in which case teams_wanted must be <=2  
+  """
+  def GetGameScore(tla, match_no):
+    """
+    returns the game score of the team tla for match_no
+    """
+    def GetTeamZone(tla, match_no):
+      """
+      returns the zone this team occupied during the given match
+      """
+      match = match_from_ms(r.get("org.srobo.matches")[match_no])
+      
+      for i in range(len(match["teams"])):
+        if match["teams"][i] == tla:
+          return i          
+          
+      print "OMG WTF BBQ" # FIXME
+      sys.exit(3)
+                  
+    team_zone = GetTeamZone(tla, match_no)
+    
+    return r.get("org.srobo.scores.match.{0}.{1}.game_points".format(match_no, team_zone))
+      
+  def GetLeagueScore(tla):
+  """
+  returns the league score of team tla
+  """
+    return r.get("org.srobo.teams." + tla) 
+  
+  def GetTotalGameScore(tla):   
+  """ 
+  returns the total game score of team tla
+  """
+  
+  
 def GetTopSixteenTeamsByLeaguePoints():
   """
   returns a sorted list containing the TLAs (as strings) of the
   top sixteen teams by league points, ordered with best team first
-  """
-  def GetLeagueScoreFromTLA(tla):
-    return r.get("org.srobo.teams." + tla) 
- 
-  # strategy: get /all/ the teams, sort them by league points, truncate to 16, return
+  """ 
+  # strategy: get /all/ the teams, truncate to 16 using ResolveDraws, return
   team_count = r.llen("org.srobo.teams")
   
   TLAS = []
@@ -67,9 +106,7 @@ def GetTopSixteenTeamsByLeaguePoints():
 
   TLAS.sort(cmp = GetLeagueScoreFromTLA)
   
-  # tacky:
-  while len(TLAS) > 16
-    del TLAS[-1]
+  TLAS = ResolveDraws(TLAS, 16)
     
   return TLAS  
 
@@ -102,7 +139,9 @@ def GetTopTwoTeamsFromMatch(match_no):
   
   temp.sort(cmp = GetScoreFromTuple, reverse = True) # putting the best scores to the start of the list.
   
-  # now temp[0] and [1] are the top two teams:
+  
+  
+  # now temp[0] and [1] are the top two teams who are going through:
   return [temp[0][1], temp[1][1]]  
   
   
