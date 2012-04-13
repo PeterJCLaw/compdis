@@ -169,7 +169,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     for tla in tla_list:
       tuple_list.append((GetGameScore(tla, match_no), tla))
       
-    tuple_list = RemoveTeams(tuple_list, teams_wanted, "Game score")
+    tuple_list = RemoveTeams(tuple_list, teams_wanted, "match score")
     
     if len(tuple_list) == teams_wanted:
       return GetTLAsFromTupleList(tuple_list)
@@ -178,16 +178,16 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   for i in range(len(tuple_list)):
     tuple_list[i][0] = GetLeagueScore(tuple_list[i][1])
    
-  tuple_list = RemoveTeams(tuple_list, teams_wanted, "League points")
+  tuple_list = RemoveTeams(tuple_list, teams_wanted, "league points")
   
   if len(tuple_list) == teams_wanted:
     return GetTLAsFromTupleList(tuple_list)
     
   # Now on total game points
   for i in range(len(tuple_list)):
-    tuple_list[i][0] = GetTotalGameScore(tuple_list[i][1], "Total game score")
+    tuple_list[i][0] = GetTotalGameScore(tuple_list[i][1], "Total game (match pts) score")
    
-  tuple_list = RemoveTeams(tuple_list, teams_wanted)
+  tuple_list = RemoveTeams(tuple_list, teams_wanted, "total game points")
   
   if len(tuple_list) == teams_wanted:
     return GetTLAsFromTupleList(tuple_list)
