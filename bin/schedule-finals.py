@@ -360,7 +360,7 @@ def ScheduleQuarterFinals():
     
     start_time_competition += match_length
     
-  persist_to_redis(matches)
+  AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 4)  
   print "[schedule-finals] Done."
   
@@ -395,7 +395,7 @@ def ScheduleSemiFinals():
     
     match_start_time += match_length * 60
     
-  persist_to_redis(matches)
+  AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 6)  
   print "[schedule-finals] Done."
   
@@ -429,7 +429,7 @@ def ScheduleFinal():
     
     match_start_time += match_length * 60
     
-  persist_to_redis(matches)
+  AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 6)  
   print "[schedule-finals] Done."
   
