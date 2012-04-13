@@ -101,7 +101,108 @@ def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
   teams_wanted is unrestricted, OR
   an index in org.sobo.matches, in which case teams_wanted must be <=2  
   """
+  def GetScoreOfTuple(a_tuple):
+      return a_tuple[0]
+      
+  # this will contain (integer score, tla) tuples.
+  # can be used with remove teams to reduce the number of teams we're still considering.
+  tuple_list = []
   
+  def RemoveTeams(tuple_list, teams_wanted, stage_name):
+    """
+    removes as many teams as possible from the given list, returns the new list (still of tuples)
+    will ensure a minimum of teams_wanted entries are in the list
+    """
+    tuple_list.sort(key = GetScoreOfTuple) # lowest scores first
+    dropped_tuples = []
+    
+    while len(tuple_list) > teams_wanted:
+      if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]):
+        # then the lowest item can be dropped        
+        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + 
+              " because they scored too few points at this stage"        
+        
+        dropped_tuples.append(tuple_list[0])
+        del tuple_list[0]
+      else:
+        break
+        
+    print "After stage: " + stage_name + 
+          " there are {0} teams competing for {1} positions".format(len(tuple_list), teams_wanted)
+    
+    teams = ''
+    for (score, tla) in dropped_tuples:
+      teams = teams + tla + ', '
+      
+    teams = teams[0:-len(', ')]
+    
+    print "and we dropped the following teams: " + teams
+          
+    return tuple_list
+  
+  def GetTLAsFromTupleList(tuple_list):
+    result = []
+    for (score, tla) in tuple_list:
+      result.append(tla)
+      
+    return result    
+      
+  if match_no != -1:
+    if teams_wanted > 2:
+      # error
+      sys.exit(4) # FIXME
+      
+    # use game score from this match first
+    for tla in tla_list:
+      tuple_list.append((GetGameScore(tla, match_no), tla))
+      
+    tuple_list = RemoveTeams(tuple_list, teams_wanted, "Game score")
+    
+    if len(tuple_list) == teams_wanted:
+      return GetTLAsFromTupleList(tuple_list)
+      
+  # Now on league points
+  for i in range(len(tuple_list)):
+    tuple_list[i][0] = GetLeagueScore(tuple_list[i][1])
+   
+  tuple_list = RemoveTeams(tuple_list, teams_wanted, "League points")
+  
+  if len(tuple_list) == teams_wanted:
+    return GetTLAsFromTupleList(tuple_list)
+    
+  # Now on total game points
+  for i in range(len(tuple_list)):
+    tuple_list[i][0] = GetTotalGameScore(tuple_list[i][1], "Total game score")
+   
+  tuple_list = RemoveTeams(tuple_list, teams_wanted)
+  
+  if len(tuple_list) == teams_wanted:
+    return GetTLAsFromTupleList(tuple_list)
+      
+  # now on human intervention:
+  print """Despite my best efforts, I cannot resolve the draw between the following {0} teams.\n
+           I need {1} teams
+           For completeness' sake, I shall print out their game, 
+           league and total game scores:\n
+           (If all game scores are 0, then we are trying to 
+           schedule for the quarter finals)""".format(len(tuple_list), teams_wanted)
+  
+  big_tuples = []
+  # (TLA, game points, league points, total game points)
+  for (total_game_score, tla) in tuple_list:
+    if match_no == -1:
+      big_tuples.append((tla, 0, GetLeagueScore(tla), GetTotalGameScore(tla)))
+    else:
+      big_tuples.append((tla, GetGameScore(tla, match_no), GetLeagueScore(tla), GetTotalGameScore(tla)))
+  
+  print "Team TLA    Game Pts    League Pts    Total Game Pts"
+    
+  for (TLA, game_points, league_points, total_game_points) in big_tuples:
+    print TLA + '    ' + game_points + '    ' + league_points + '    ' + total_game_points
+    
+  print "Please now enter the {0} TLAs of the teams you want to PROCEED".format(teams_wanted)
+  
+  # todo.
   
 def GetTopSixteenTeamsByLeaguePoints():
   """
