@@ -131,16 +131,14 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     while len(tuple_list) > teams_wanted:
       if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]):
         # then the lowest item can be dropped        
-        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + """
-               because they scored too few points at this stage"""        
+        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + "because they scored too few points at this stage"        
         
         dropped_tuples.append(tuple_list[0])
         del tuple_list[0]
       else:
         break
         
-    print "After stage: " + stage_name + """there are {0} teams competing for 
-           {1} positions""".format(len(tuple_list), teams_wanted)
+    print "After stage: " + stage_name + " there are {0} teams competing for {1} positions".format(len(tuple_list), teams_wanted)
     
     teams = ''
     for (score, tla) in dropped_tuples:
@@ -196,11 +194,8 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   tuple_list.reverse() # it's currently lowest first, so reverse for highest first.
    
   print """Despite my best efforts, I cannot resolve the draw(s) between the following {0} teams.\n
-           I need {1} teams
-           For completeness' sake, I shall print out their game, 
-           league and total game scores:\n
-           (If all game scores are 0, then we are trying to 
-           schedule for the quarter finals)""".format(len(tuple_list), teams_wanted)
+I need {1} teams\n For completeness' sake, I shall print out their game, league and total game scores:\n
+(If all game scores are 0, then we are trying to schedule for the quarter finals)""".format(len(tuple_list), teams_wanted)
   
   big_tuples = []
   # (TLA, game points, league points, total game points)
