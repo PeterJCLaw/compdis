@@ -104,11 +104,56 @@ def GetTopTwoTeamsFromMatch(match_no):
   return [temp[0][1], temp[1][1]]  
   
   
+def create_match(start_time, teams, delay):
+  return dict{"time":start_time,
+              "teams": teams,
+              "delay": 0}
+  
 def ScheduleQuarterFinals():
   """
   Schedules the quarter finals (see above)
   This includes updating the nmber of scheduled knockout matches
   """
+  top_sixteen_tlas = GetTopSixteenTeamsByLeaguePoints()
+  
+  events_len = r.llen("org.srobo.events")
+  first_match_start_time = None
+
+  for i in range(events_len):
+    event = r.lindex("org.srobo.events", i)
+    
+    event_name = r.get("org.srobo.events." + event + ".name")
+    
+    if event_name == "final":
+      first_match_start_time = r.get("org.srobo.events." + event + ".start"
+      break
+      
+  if first_match_start_time == None:
+    print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
+    sys.exit(2)
+    
+    
+  # now have the desired start realtime for the matches.
+  # need to magic this into competition time:
+  start_time_comeptition = first_match_start_time # FIXME
+  
+  matches = []
+  
+  for match_counter in range(4):
+    teams = []
+    for team_counter in range(4):
+      # need to schedule 4 4-team matches
+      teams.append(top_sixteen_tlas[match_counter + (team_counter * 4))])
+      
+    m = create_ms(start_time_competition, teams, 0)
+    
+    matches.append(m)
+    
+    start_time_competition += match_length
+    
+  persist_to_redis(matches)
+  r.set("org.srobo.matches.knockout_matches_scheduled", 4)  
+  
   
 def ScheduleSemiFinals():
   """
