@@ -396,13 +396,12 @@ def ScheduleFinal():
     
   len_matches = r.llen("org.srobo.matches")
   
-  # get the top two teams from (A and B) and (C and D)
-  # match A..D is len_matches - 4..1 respectively.
+  # get the top two teams from E and F
   top_teams = []
   for i in range(2):
-    top_teams.append(GetTopTwoTeamsFromMatch(4 - i)
+    top_teams.append(GetTopTwoTeamsFromMatch(i)
   
-  # top_teams contains the top two teams from matched A..D in order (list of lists)
+  # top teams is a 2 list of 2 lists containing the top two teams from each match
   match_start_time = GetMatchStartTimeOfMatch(7)
   
   matches = []
