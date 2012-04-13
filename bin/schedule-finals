@@ -149,7 +149,7 @@ def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
       
   if match_no != -1:
     if teams_wanted > 2:
-      # error
+      print "[schedule-finals] 
       sys.exit(4) # FIXME
       
     # use game score from this match first
@@ -180,7 +180,9 @@ def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
     return GetTLAsFromTupleList(tuple_list)
       
   # now on human intervention:
-  print """Despite my best efforts, I cannot resolve the draw between the following {0} teams.\n
+  tuple_list.reverse() # it's currently lowest first, so reverse for highest first.
+   
+  print """Despite my best efforts, I cannot resolve the draw(s) between the following {0} teams.\n
            I need {1} teams
            For completeness' sake, I shall print out their game, 
            league and total game scores:\n
@@ -200,9 +202,58 @@ def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
   for (TLA, game_points, league_points, total_game_points) in big_tuples:
     print TLA + '    ' + game_points + '    ' + league_points + '    ' + total_game_points
     
-  print "Please now enter the {0} TLAs of the teams you want to PROCEED".format(teams_wanted)
+  print """NB: My logic is EXTREMELY LIMITED! You must carefully determine if any teams have\n
+           CLEARLY BEATEN THE FIELD and enter THOSE TLAS first (or at least, I recommend you do it first)\n"""           
+          
+  teams_entered = 0
+  teams_proceeding = []
   
-  # todo.
+  while teams_entered <= teams_wanted:
+    if teams_entered == teams_wanted:
+      print "Please confirm your team selection:"
+
+      for tla in teams_proceeding:
+        print tla
+        
+      decision_confirmed = False
+      decision_reached = False
+      
+      while not decision_reached:
+        print "Enter 'yes' if this selection is CORRECT, else 'no' (without quotes) if this selection is INCORRECT"
+        
+        input_str = raw_input()
+        if input_str == 'yes':
+          decision_confirmed = True
+          decision_reached = True
+        elif: input_str == 'no':
+          decision_confirmed = False
+          decision_reached = True
+        else:
+          continue
+          
+      if decision_confirmed:
+        return teams_proceeding
+      else:
+        teams_entered = 0
+        teams_proceeding = []         
+    else:  
+      print "Please now enter the {0} TLAs of the teams you want to PROCEED".format(teams_wanted - teams_entered)
+      
+      input_str = raw_input()
+      
+      input_str = input_str.upper() # all TLAs are capitalised
+      
+      if len(input_str) in range(3,5):
+        # try to find it in our list:
+        for (tla, a, b, c) in big_tuples:
+          if tla == input_str:
+            teams_proceeding.append(tla)
+            print "Added " + tla " to the teams PROCEEDING!"
+            teams_entered += 1
+            continue          
+      
+      print "'" + input_str + "' is not a (valid) TLA in the list I gave you, please try again."     
+  
   
 def GetTopSixteenTeamsByLeaguePoints():
   """
