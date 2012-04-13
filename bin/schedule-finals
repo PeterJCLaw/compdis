@@ -119,16 +119,16 @@ def ResolveDraws(tla_list, teams_wanted, match_nos = -1):
     while len(tuple_list) > teams_wanted:
       if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]):
         # then the lowest item can be dropped        
-        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + 
-              " because they scored too few points at this stage"        
+        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + """
+               because they scored too few points at this stage"""        
         
         dropped_tuples.append(tuple_list[0])
         del tuple_list[0]
       else:
         break
         
-    print "After stage: " + stage_name + 
-          " there are {0} teams competing for {1} positions".format(len(tuple_list), teams_wanted)
+    print "After stage: " + stage_name + """there are {0} teams competing for 
+           {1} positions""".format(len(tuple_list), teams_wanted)
     
     teams = ''
     for (score, tla) in dropped_tuples:
