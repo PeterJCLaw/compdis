@@ -281,8 +281,6 @@ def GetTopSixteenTeamsByLeaguePoints():
     # get at org.srobo.teams.str(i).tla, put it into a list of TLAS
     TLAS.append(r.get("org.srobo.teams.{0}.tla".format(i)))
 
-  TLAS.sort(cmp = GetLeagueScoreFromTLA)
-  
   TLAS = ResolveDraws(TLAS, 16)
     
   return TLAS  
