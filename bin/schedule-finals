@@ -51,10 +51,10 @@ MATCH_ZONES = 4 # you never know
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 def GetGameScore(tla, match_no):
-    """
-    returns the game score of the team tla for match_no
-    returns 0 if the given team wasn't in the match
-    """
+  """
+  returns the game score of the team tla for match_no
+  returns 0 if the given team wasn't in the match
+  """
   def GetTeamZone(tla, match_no):
     """
     returns the zone this team occupied during the given match,
