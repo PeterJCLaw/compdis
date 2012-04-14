@@ -162,17 +162,27 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     """
     tuple_list.sort(key = GetScoreOfTuple) # lowest scores first
     dropped_tuples = []
+    progressing_teams = []
     
-    while len(tuple_list) > teams_wanted:
-      if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]):
-        # then the lowest item can be dropped        
-        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + "because they scored too few points at this stage"        
+    # trim from both ends: work out who has certainly won, and who has certainly lost.
+    # work out certain winners
+    while len(progressing_teams) < teams_wanted:
+      if GetScoreOfTuple(tuple_list[-1]) > GetScoreOfTuple(tuple_list[-2]):
+        # then the highest item progresses
+        print tuple_list[-1][1] + " have progressed to the next stage!"  
         
-        dropped_tuples.append(tuple_list[0])
-        del tuple_list[0]
+        progressing_teams.append(tuple_list[-1])
+        del tuple_list[-1]
       else:
         break
-        
+      
+              
+    while len(tuple_list) + len(progressing_teams) < teams_wanted:
+      # drop certain losers:
+      if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]):
+        # item 0 has certainly lost, drop it
+        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + "because they scored too few points at this stage"  
+    
     print "After stage: " + stage_name + " there are {0} teams competing for {1} positions".format(len(tuple_list), teams_wanted)
     
     teams = ''
