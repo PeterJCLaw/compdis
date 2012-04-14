@@ -5,6 +5,8 @@ import time
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 if __name__ == "__main__":
+    print "this will delete all the data in redis"
+    print "you should only run this at the start of the competition"
     print "are you sure you want to do this? [y/n]"
     x = raw_input()
     if x == "y":
