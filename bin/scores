@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 import redis, shlex, json
 
@@ -142,7 +142,7 @@ def zone_entry(mod,match,z,zone):
 			return False
 	actor.hmset('{0}.scores.match.{1}.{2}'.format(BASE,match,z),{'trobot':trobot,'tzone':tzone,'tbucket':tbucket,'nbuckets':nbuckets,'game_points':game_points([match,z,trobot,tzone,tbucket,nbuckets])})
 	return True
-	
+
 def check_match(match):
 	max_tokens = 20
 	max_buckets = 4
