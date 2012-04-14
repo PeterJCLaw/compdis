@@ -256,7 +256,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
       
     return result    
       
-  print "Resolving draws between {0} teams for {1} positions".format(len(tla_list), teams_wanted)
+  print "\nResolving draws between {0} teams for {1} positions".format(len(tla_list), teams_wanted)
   
   if match_no != -1:
     if teams_wanted > 2:
@@ -538,7 +538,7 @@ def ScheduleFinal():
       
     m = create_match(match_start_time, teams, 0)
     
-    match_start_time += match_length * 60
+    match_start_time += scheduler.match_length * 60
     
   AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 7)  
