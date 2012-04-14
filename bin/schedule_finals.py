@@ -161,12 +161,14 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     will ensure a minimum of teams_wanted entries are in the list
     """
     tuple_list.sort(key = GetScoreOfTuple) # lowest scores first
-    dropped_tuples = []
+    dropped_teams = []
     progressing_teams = []
     run_length = 0
     
     # trim from both ends: work out who has certainly won, and who has certainly lost.
     # work out certain winners
+    print "Determining certain winners..."
+    
     while len(progressing_teams) < teams_wanted:
       if GetScoreOfTuple(tuple_list[-1]) > GetScoreOfTuple(tuple_list[-2]) and (run_length == 0):
         # then the highest item progresses
@@ -174,7 +176,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
         
         progressing_teams.append(tuple_list[-1])
         del tuple_list[-1]      
-      elif GetScoreOfTuple(tuple_list[-1] == GetScoreOfTuple(tuple_list[-2]):
+      elif GetScoreOfTuple(tuple_list[-(run_length + 1)]) == GetScoreOfTuple(tuple_list[-(run_length + 2)]):
         # see how many items have drawn
         run_length += 1
       elif run_length > 0:
@@ -196,16 +198,18 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
         break      
               
     run_length = 0
+    
+    print "Determining certain losers"
        
-    while len(tuple_list) + len(progressing_teams) < teams_wanted:
+    while len(tuple_list) + len(progressing_teams) > teams_wanted and (len(tuple_list) > 1):
       # drop certain losers:      
-      if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]):
+      if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]) and (run_length == 0):
         # item 0 has certainly lost, drop it
         print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + "because they scored too few points at this stage"  
         
         dropped_teams.append(tuple_list[0])
         del tuple_list[0]
-      elif GetScoreOfTuple(tuple_list[0]) == GetScoreOfTuple(tuple_list[1]):
+      elif GetScoreOfTuple(tuple_list[run_length]) == GetScoreOfTuple(tuple_list[run_length + 1]):
         # count this run, see if it can be dropped in its entirety
         run_length += 1
       elif run_length > 0:
