@@ -162,9 +162,62 @@ def check_match(match):
 	if buckets > max_buckets:
 		print('WARNING! Too many buckets in this match! ({0})'.format(buckets))
 
+def calc_positions(zpoints):
+	"""
+	A function to work out the placings of zones in a game, given the game points.
+	@param zpoints: a dict of zone number to game points.
+	@returns: a dict of position to array of zone numbers.
+	"""
+
+	pos_map = {}
+	points_map = {}
+
+	for z, p in zpoints.iteritems():
+		if not points_map.has_key(p):
+			points_map[p] = []
+		points_map[p].append(z)
+
+	i = 1
+	for p in sorted(points_map.keys(), reverse = True):
+		pos_map[i] = points_map[p]
+		i += len(points_map[p])
+
+	return pos_map
+
+def calc_league_points(pos_map):
+	"""
+	A function to work out the league points for each zone, given the rankings within that game.
+	@param pos_map: a dict of position to array of zone numbers.
+	@returns: a dict of zone number to league points.
+	"""
+
+	lpoints = {}
+
+	for pos, zones in pos_map.iteritems():
+		# max points is 4, add one because pos is 1-indexed
+		# TODO: fix tie scoring
+		points = (4 + 1) - pos
+		for z in zones:
+			lpoints[z] = points
+
+	return lpoints
+
+def get_league_points(zpoints):
+	"""
+	A function to work out the league points for each zone, given the game points.
+	This is a thin convenience wrapper around `calc_positions` and `calc_league_points`.
+	@param zpoints: a dict of zone number to game points.
+	@returns: a dict of zone number to league points.
+	"""
+	pos_map = calc_positions(zpoints)
+	lpoints = calc_league_points(pos_map)
+	return lpoints
+
 def match_rank(match,sub):
+	print "\nmatch_rank"
 	zpoints = _get_zone_points(match)
-	_store_match_ranks(match, sub, zpoints)
+	lpoints = get_league_points(zpoints)
+	_store_league_points(match, sub, lpoints)
 
 def _get_zone_points(match):
 	zpoints = dict()
@@ -176,17 +229,13 @@ def _get_zone_points(match):
 			zpoints['{0}'.format(z)] = -1
 	return zpoints
 
-def _store_match_ranks(match, sub, zpoints):
+def _store_league_points(match, sub, lpoints):
 	mat = split_match(actor.lindex('{0}.matches'.format(BASE), match))
-	zord = sorted(zpoints, key=zpoints.get, reverse=True)
 
 	scored = 4
-	for z in range(len(zord)):
+	for z, pts in lpoints.iteritems():
 		if sub is True:
-			actor.decr('{0}.scores.team.{1}'.format(BASE,mat['teamz{0}'.format(zord[z])]),scored)
+			actor.decr('{0}.scores.team.{1}'.format(BASE, mat['teamz{0}'.format(z)]), pts)
 		else:
-			actor.incr('{0}.scores.team.{1}'.format(BASE,mat['teamz{0}'.format(zord[z])]),scored)
-			actor.hset('{0}.scores.match.{1}.{2}'.format(BASE,match,zord[z]),'league_points',scored)
-		if z != len(zord)-1:
-			if zpoints['{0}'.format(z)] != zpoints['{0}'.format(z+1)]:
-				scored = 4-z-1
+			actor.incr('{0}.scores.team.{1}'.format(BASE, mat['teamz{0}'.format(z)]), pts)
+			actor.hset('{0}.scores.match.{1}.{2}'.format(BASE, match, z),'league_points', pts)
