@@ -163,7 +163,10 @@ def check_match(match):
 		print('WARNING! Too many buckets in this match! ({0})'.format(buckets))
 
 def match_rank(match,sub):
-	mat = split_match(actor.lindex('{0}.matches'.format(BASE), match))
+	zpoints = _get_zone_points(match)
+	_store_match_ranks(match, sub, zpoints)
+
+def _get_zone_points(match):
 	zpoints = dict()
 	for z in range(4):
 		zone = actor.hgetall('{0}.scores.match.{1}.{2}'.format(BASE,match,z))
@@ -171,7 +174,12 @@ def match_rank(match,sub):
 			zpoints['{0}'.format(z)] = game_points([match,z,zone['trobot'],zone['tzone'],zone['tbucket'],zone['nbuckets']])
 		else:
 			zpoints['{0}'.format(z)] = -1
+	return zpoints
+
+def _store_match_ranks(match, sub, zpoints):
+	mat = split_match(actor.lindex('{0}.matches'.format(BASE), match))
 	zord = sorted(zpoints, key=zpoints.get, reverse=True)
+
 	scored = 4
 	for z in range(len(zord)):
 		if sub is True:
