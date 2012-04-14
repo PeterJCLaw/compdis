@@ -65,10 +65,7 @@ def match_to_ms(match):
     return json.dumps(match)
 
 if __name__ == "__main__":
-    ps = r.pubsub()
-    ps.psubscribe("org.srobo.time.competition") 
-    lg = ps.listen()
-    for message in lg:
+    while True:
         ctime = r.get("org.srobo.time.competition")
         print ctime
         print get_current_match()
@@ -78,3 +75,4 @@ if __name__ == "__main__":
             r.set("org.srobo.matches.current", get_current_match())
         r.set("org.srobo.matches.next", get_next_match())
         r.set("org.srobo.matches.state", get_current_state())
+        time.sleep(1)
