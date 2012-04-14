@@ -24,7 +24,7 @@ for x in league_keys:
 
 print time_periods
 
-NUMBER_TEAMS = 24
+NUMBER_TEAMS = 20
 TEAMS_PER_MATCH = 4
 match_length = 7
 
