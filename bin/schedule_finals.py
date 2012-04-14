@@ -176,6 +176,9 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
         
         progressing_teams.append(tuple_list[-1])
         del tuple_list[-1]      
+      elif run_length > len(tuple_list):
+        # run covers all of the remaining tuples, break
+        break
       elif GetScoreOfTuple(tuple_list[-(run_length + 1)]) == GetScoreOfTuple(tuple_list[-(run_length + 2)]):
         # see how many items have drawn
         run_length += 1
@@ -219,6 +222,9 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
         
         dropped_teams.append(tuple_list[0])
         del tuple_list[0]
+      elif run_length > len(tuple_list) - 1:
+        # run covers remaining entries, break
+        break
       elif GetScoreOfTuple(tuple_list[run_length]) == GetScoreOfTuple(tuple_list[run_length + 1]):
         # count this run, see if it can be dropped in its entirety
         run_length += 1
