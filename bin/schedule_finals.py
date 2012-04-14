@@ -388,6 +388,8 @@ def GetTopSixteenTeamsByLeaguePoints():
     TLAS.append(r.get("org.srobo.teams.{0}.tla".format(i)))
 
   TLAS = ResolveDraws(TLAS, 16)
+  TLAS.sort(key = GetLeagueScore, reverse = True) # need to order them best team first.
+  # teams equal on league points will be semi-randomly placed (sort isn't stable)
   print "Done."  
   return TLAS  
 
@@ -397,7 +399,7 @@ def GetTopTwoTeamsFromMatch(match_no):
   returns the top two teams from the given match number (index in org.srobo.matches)
   as a list of TLAS (as strings)
   """   
-  print "Getting the top two teams from match: " + str(match_no)
+  #print "Getting the top two teams from match: " + str(match_no)
   matches_len = r.llen("org.srobo.matches")
   
   if match_no not in range(matches_len):
@@ -405,10 +407,10 @@ def GetTopTwoTeamsFromMatch(match_no):
               which is out of range!""".format(matchs_no)
     sys.exit(1)
   
-  match = match_from_ms(r.get(org.srobo.matches)[match_no])
+  match = scheduler.match_from_ms(r.lindex("org.srobo.matches", match_no))
     
   temp = ResolveDraws(match["teams"], 2, match_no)  
-  print "Done getting top two teams"
+ # print "Done getting top two teams"
   return temp
   
 def create_match(start_time, teams, delay):
@@ -453,7 +455,7 @@ def ScheduleQuarterFinals():
   print "[schedule-finals] Scheduling the quarter finals..."
   top_sixteen_tlas = GetTopSixteenTeamsByLeaguePoints()
   
-  start_time_comeptition = GetStartTimeOfMatch(0)
+  start_time = GetStartTimeOfMatch(0)
   
   matches = []
   
@@ -463,11 +465,11 @@ def ScheduleQuarterFinals():
       # need to schedule 4 4-team matches
       teams.append(top_sixteen_tlas[match_counter + (team_counter * 4)])
       
-    m = create_match(start_time_competition, teams, 0)
+    m = create_match(start_time, teams, 0)
     
     matches.append(m)
     
-    start_time_competition += match_length
+    start_time += scheduler.match_length
     
   AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 4)  
@@ -502,7 +504,7 @@ def ScheduleSemiFinals():
       
     m = create_match(match_start_time, teams, 0)
     
-    match_start_time += match_length * 60
+    match_start_time += (scheduler.match_length * 60)
     
   AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 6)  
@@ -523,7 +525,7 @@ def ScheduleFinal():
     top_teams.append(GetTopTwoTeamsFromMatch(i))
   
   # top teams is a 2 list of 2 lists containing the top two teams from each match
-  match_start_time = GetMatchStartTimeOfMatch(7)
+  match_start_time = GetStartTimeOfMatch(7)
   
   matches = []
   for match_counter in range(1):
@@ -539,7 +541,7 @@ def ScheduleFinal():
     match_start_time += match_length * 60
     
   AppendToMatches(matches)
-  r.set("org.srobo.matches.knockout_matches_scheduled", 6)  
+  r.set("org.srobo.matches.knockout_matches_scheduled", 7)  
   print "[schedule-finals] Done."
   
 def main():
