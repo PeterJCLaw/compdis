@@ -163,26 +163,61 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     tuple_list.sort(key = GetScoreOfTuple) # lowest scores first
     dropped_tuples = []
     progressing_teams = []
+    run_length = 0
     
     # trim from both ends: work out who has certainly won, and who has certainly lost.
     # work out certain winners
     while len(progressing_teams) < teams_wanted:
-      if GetScoreOfTuple(tuple_list[-1]) > GetScoreOfTuple(tuple_list[-2]):
+      if GetScoreOfTuple(tuple_list[-1]) > GetScoreOfTuple(tuple_list[-2]) and (run_length == 0):
         # then the highest item progresses
         print tuple_list[-1][1] + " have progressed to the next stage!"  
         
         progressing_teams.append(tuple_list[-1])
-        del tuple_list[-1]
+        del tuple_list[-1]      
+      elif GetScoreOfTuple(tuple_list[-1] == GetScoreOfTuple(tuple_list[-2]):
+        # see how many items have drawn
+        run_length += 1
+      elif run_length > 0:
+        # progress run_length items if they'll fit, else we need another stage.
+        if len(progressing_teams) + run_length <= teams_wanted:
+          # progress run_length items
+          for i in range(run_length):
+            progressing_teams.append(tuple_list[-1])
+            print tuple_list[-1][1] + " have progressed to the next stage!"  
+            del tuple_list[-1]
+            
+          run_length = 0
+          continue             
+        else:
+          # need another stage, break
+          break       
       else:
-        break
-      
+        break      
               
+    run_length = 0
+       
     while len(tuple_list) + len(progressing_teams) < teams_wanted:
-      # drop certain losers:
+      # drop certain losers:      
       if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]):
         # item 0 has certainly lost, drop it
         print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + "because they scored too few points at this stage"  
-    
+        
+        dropped_teams.append(tuple_list[0])
+        del tuple_list[0]
+      elif GetScoreOfTuple(tuple_list[0]) == GetScoreOfTuple(tuple_list[1]):
+        # count this run, see if it can be dropped in its entirety
+        run_length += 1
+      elif run_length > 0:
+        # drop the whole run
+        for i in range(run_length):
+          dropped_teams.append(tuple_list[i])
+          
+        del tuple_list[0:run_length]
+        run_length = 0
+        continue
+      else:  
+        break
+        
     print "After stage: " + stage_name + " there are {0} teams competing for {1} positions".format(len(tuple_list), teams_wanted)
     
     teams = ''
