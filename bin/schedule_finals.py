@@ -57,7 +57,7 @@ def AppendToMatches(matches):
   match_strings = []
   
   for m in matches:
-    match_strings.append(match_to_ms(m))
+    match_strings.append(scheduler.match_to_ms(m))
     
   for m_str in match_strings:
     r.rpush("org.srobo.matches", m_str)
@@ -120,6 +120,13 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   # can be used with remove teams to reduce the number of teams we're still considering.
   tuple_list = []
   
+  # test we haven't gone insane:
+  if len(tla_list) < teams_wanted:
+    print "[schedule_finals] Trying to get {0} teams from {1} candidates!! ERROR".format(teams_wanted, len(tla_list))
+  elif len(tla_list) == teams_wanted:
+    # trivial case
+    return tla_list
+  
   def RemoveTeams(tuple_list, teams_wanted, stage_name):
     """
     removes as many teams as possible from the given list, returns the new list (still of tuples)
@@ -157,6 +164,8 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
       
     return result    
       
+  print "Resolving draws between {0} teams for {1} positions".format(len(tla_list), teams_wanted)
+  
   if match_no != -1:
     if teams_wanted > 2:
       print """[schedule-finals] More than two teams requested from a match. This is an epic internal error!!!\n
@@ -164,6 +173,8 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
       sys.exit(4) # FIXME
       
     # use game score from this match first
+    print "Using game score from given match first"
+    
     for tla in tla_list:
       tuple_list.append((GetGameScore(tla, match_no), tla))
       
@@ -173,6 +184,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
       return GetTLAsFromTupleList(tuple_list)
       
   # Now on league points
+  print "Now using league points on the remaining {0} teams".format(len(tuple_list))
   for i in range(len(tuple_list)):
     tuple_list[i][0] = GetLeagueScore(tuple_list[i][1])
    
@@ -182,6 +194,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     return GetTLAsFromTupleList(tuple_list)
     
   # Now on total game points
+  print "Now using total game points on the remaining {0} teams".format(len(tuple_list))
   for i in range(len(tuple_list)):
     tuple_list[i][0] = GetTotalGameScore(tuple_list[i][1], "Total game (match pts) score")
    
@@ -268,8 +281,9 @@ def GetTopSixteenTeamsByLeaguePoints():
   returns a sorted list containing the TLAs (as strings) of the
   top sixteen teams by league points, ordered with best team first
   """ 
+  print "Getting the top sixteen teams by league score..."
   # strategy: get /all/ the teams, truncate to 16 using ResolveDraws, return
-  team_count = r.llen("org.srobo.teams")
+  team_count = len(r.keys("org.srobo.teams*tla"))
   
   TLAS = []
   for i in range(1, team_count + 1):
@@ -277,7 +291,7 @@ def GetTopSixteenTeamsByLeaguePoints():
     TLAS.append(r.get("org.srobo.teams.{0}.tla".format(i)))
 
   TLAS = ResolveDraws(TLAS, 16)
-    
+  print "Done."  
   return TLAS  
 
 
@@ -286,6 +300,7 @@ def GetTopTwoTeamsFromMatch(match_no):
   returns the top two teams from the given match number (index in org.srobo.matches)
   as a list of TLAS (as strings)
   """   
+  print "Getting the top two teams from match: " + str(match_no)
   matches_len = r.llen("org.srobo.matches")
   
   if match_no not in range(matches_len):
@@ -294,8 +309,10 @@ def GetTopTwoTeamsFromMatch(match_no):
     sys.exit(1)
   
   match = match_from_ms(r.get(org.srobo.matches)[match_no])
-  
-  return ResolveDraws(match["teams"], 2, match_no)  
+    
+  temp = ResolveDraws(match["teams"], 2, match_no)  
+  print "Done getting top two teams"
+  return temp
   
 def create_match(start_time, teams, delay):
   return dict({"time":start_time,
