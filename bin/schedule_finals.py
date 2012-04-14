@@ -72,7 +72,11 @@ def GetGameScore(tla, match_no):
     returns the zone this team occupied during the given match,
     -1 if the team wasn't in the match
     """
-    match = match_from_ms(r.get("org.srobo.matches")[match_no])
+    match = match_from_ms(r.lindex("org.srobo.matches", match_no))
+    
+    if match == None:
+      print "[sched_finals.GetGameScore.GetTeamZone] Match {0} does not exist - critical error".format(match_no)
+      sys.exit(5)
       
     for i in range(len(match["teams"])):
       if match["teams"][i] == tla:
@@ -88,7 +92,7 @@ def GetGameScore(tla, match_no):
       return 0
     else:    
       temp = r.get("org.srobo.scores.match.{0}.{1}.game_points".format(match_no, team_zone))
-      print tla " scored {0} points in this match".format(temp)
+      print tla + " scored {0} points in this match".format(temp)
       return temp
       
 def GetLeagueScore(tla):
@@ -96,7 +100,7 @@ def GetLeagueScore(tla):
   returns the league score of team tla
   """
   temp = r.get("org.srobo.scores.team." + tla) 
-  print tla + " have gained {0} total league points so far"
+  print tla + " have gained {0} total league points so far".format(temp)
   
 def GetTotalGameScore(tla):   
   """ 
