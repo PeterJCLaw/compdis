@@ -172,7 +172,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     while len(progressing_teams) < teams_wanted:
       if GetScoreOfTuple(tuple_list[-1]) > GetScoreOfTuple(tuple_list[-2]) and (run_length == 0):
         # then the highest item progresses
-        print tuple_list[-1][1] + " have progressed to the next stage!"  
+        #print tuple_list[-1][1] + " have progressed to the next stage!"  
         
         progressing_teams.append(tuple_list[-1])
         del tuple_list[-1]      
@@ -183,10 +183,10 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
         # progress run_length items if they'll fit, else we need another stage.
         if len(progressing_teams) + run_length <= teams_wanted:
           # progress run_length items
-          print "progressing {0} teams in one go".format(run_length)
+          #print "progressing {0} teams in one go".format(run_length)
           for i in range(run_length):
             progressing_teams.append(tuple_list[-1])
-            print tuple_list[-1][1] + " have progressed to the next stage!"  
+            #print tuple_list[-1][1] + " have progressed to the next stage!"  
             del tuple_list[-1]
             
           run_length = 0
@@ -199,14 +199,14 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
               
     run_length = 0
     
-    print "Determining certain losers"
+    print "Determining certain losers..."
     
     if len(tuple_list) == 1:
       # then we have to check it against the worst progressing_team
       progressing_teams.sort(key = GetScoreOfTuple) # worst team first.
       if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(progressing_teams[0]):
         # they get dropped (worse than the worst team that already went through)
-        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name " because they scored too few points"
+        #print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + " because they scored too few points"
         dropped_teams.append(tuple_list[0])
         del tuple_list[0]
       
@@ -215,7 +215,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
       # drop certain losers:      
       if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]) and (run_length == 0):
         # item 0 has certainly lost, drop it
-        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + " because they scored too few points at this stage"  
+        #print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + " because they scored too few points at this stage"  
         
         dropped_teams.append(tuple_list[0])
         del tuple_list[0]
@@ -224,7 +224,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
         run_length += 1
       elif run_length > 0:
         # drop the whole run
-        print "Dropping {0} teams in one go".format(run_length)
+        #print "Dropping {0} teams in one go".format(run_length)
         for i in range(run_length):
           dropped_teams.append(tuple_list[i])
                     
@@ -245,7 +245,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
       
     teams = teams[0:-len(', ')]
     
-    print "and we dropped the following teams: " + teams
+    print "and we dropped the following teams due to low score: " + teams
           
     return progressing_teams
   
