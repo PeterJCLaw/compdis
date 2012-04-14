@@ -167,7 +167,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     
     # trim from both ends: work out who has certainly won, and who has certainly lost.
     # work out certain winners
-    print "Determining certain winners..."
+    #print "Determining certain winners..."
     
     while len(progressing_teams) < teams_wanted:
       if GetScoreOfTuple(tuple_list[-1]) > GetScoreOfTuple(tuple_list[-2]) and (run_length == 0):
@@ -199,7 +199,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
               
     run_length = 0
     
-    print "Determining certain losers..."
+    #print "Determining certain losers..."
     
     if len(tuple_list) == 1:
       # then we have to check it against the worst progressing_team
@@ -265,7 +265,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
       sys.exit(4) # FIXME
       
     # use game score from this match first
-    print "Using game score from given match first"
+    # print "Using game score from given match first"
     
     for tla in tla_list:
       tuple_list.append(CreateTuple(GetGameScore(tla, match_no), tla))
