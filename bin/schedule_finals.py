@@ -181,6 +181,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
         # progress run_length items if they'll fit, else we need another stage.
         if len(progressing_teams) + run_length <= teams_wanted:
           # progress run_length items
+          print "progressing {0} teams in one go".format(run_length)
           for i in range(run_length):
             progressing_teams.append(tuple_list[-1])
             print tuple_list[-1][1] + " have progressed to the next stage!"  
@@ -209,9 +210,10 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
         run_length += 1
       elif run_length > 0:
         # drop the whole run
+        print "Dropping {0} teams in one go".format(run_length)
         for i in range(run_length):
           dropped_teams.append(tuple_list[i])
-          
+                    
         del tuple_list[0:run_length]
         run_length = 0
         continue
