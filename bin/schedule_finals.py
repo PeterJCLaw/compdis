@@ -237,7 +237,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     
     print "and we dropped the following teams: " + teams
           
-    return tuple_list
+    return progressing_teams
   
   def GetTLAsFromTupleList(tuple_list):
     result = []
