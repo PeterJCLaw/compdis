@@ -182,8 +182,13 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     
     if len(tuple_list) == teams_wanted:
       return GetTLAsFromTupleList(tuple_list)
-      
+  else:
+    # need to setup the tuple_list correctly for league points (score will be filled in shortly)
+    for tla in tla_list:
+      tuple_list.append((0, tla))
+          
   # Now on league points
+  
   print "Now using league points on the remaining {0} teams".format(len(tuple_list))
   for i in range(len(tuple_list)):
     tuple_list[i][0] = GetLeagueScore(tuple_list[i][1])
