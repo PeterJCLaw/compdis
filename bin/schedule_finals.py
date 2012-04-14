@@ -109,7 +109,7 @@ def GetLeagueScore(tla):
   returns the league score of team tla
   """
   temp = r.get("org.srobo.scores.team." + tla) 
-  print tla + " have gained {0} total league points so far".format(temp)
+ # print tla + " have gained {0} total league points so far".format(temp)
   return int(temp)
   
 def GetTotalGameScore(tla):   
@@ -128,7 +128,7 @@ def GetTotalGameScore(tla):
     total = total + temp
   
   #print tla + " have score {0} total game points thus far".format(total)  
-  return total
+  return int(total)
 
 def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   """
@@ -200,12 +200,22 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     run_length = 0
     
     print "Determining certain losers"
-       
+    
+    if len(tuple_list) == 1:
+      # then we have to check it against the worst progressing_team
+      progressing_teams.sort(key = GetScoreOfTuple) # worst team first.
+      if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(progressing_teams[0]):
+        # they get dropped (worse than the worst team that already went through)
+        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name " because they scored too few points"
+        dropped_teams.append(tuple_list[0])
+        del tuple_list[0]
+      
+           
     while len(tuple_list) + len(progressing_teams) > teams_wanted and (len(tuple_list) > 1):
       # drop certain losers:      
       if GetScoreOfTuple(tuple_list[0]) < GetScoreOfTuple(tuple_list[1]) and (run_length == 0):
         # item 0 has certainly lost, drop it
-        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + "because they scored too few points at this stage"  
+        print "Dropping " + tuple_list[0][1] + " at stage " + stage_name + " because they scored too few points at this stage"  
         
         dropped_teams.append(tuple_list[0])
         del tuple_list[0]
