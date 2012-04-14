@@ -473,7 +473,7 @@ def ScheduleQuarterFinals():
     
   AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 4)  
-  print "[schedule-finals] Done."
+  print "[schedule_finals] Done scheduling the QUARTER FINALS."
   
   
 def ScheduleSemiFinals():
@@ -508,7 +508,7 @@ def ScheduleSemiFinals():
     
   AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 6)  
-  print "[schedule-finals] Done."
+  print "[schedule-finals] Done scheduling the SEMI FINALS"
   
 def ScheduleFinal():
   """
@@ -542,7 +542,7 @@ def ScheduleFinal():
     
   AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 7)  
-  print "[schedule-finals] Done."
+  print "[schedule-finals] Done scheduling the FINAL!"
   
 def main():
   """
