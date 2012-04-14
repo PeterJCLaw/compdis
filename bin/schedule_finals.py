@@ -421,7 +421,7 @@ def GetStartTimeOfMatch(knockout_match_no):
   Returns the start time in competition time for the given knockout_match_no,
   counting from zero.
   """
-  events_len = r.llen("org.srobo.events")
+  events_len = r.llen("org.srobo.schedule")
   match_start_time = None
 
   for i in range(events_len):
@@ -434,14 +434,16 @@ def GetStartTimeOfMatch(knockout_match_no):
       break
       
   if match_start_time == None:
-    print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
-    sys.exit(2)
-       
+    #print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
+    #sys.exit(2)
+    # TEMP FIXME
+    match_start_time = 0
+           
   # now have the desired start realtime for the given match_no.
   # need to magic this into competition time:
   first_knockout_match_start_time = match_start_time - int(r.get("org.srobo.time.start"))
 
-  return first_knockout_match_start_time + (match_no * match_length)
+  return first_knockout_match_start_time + (knockout_match_no * scheduler.match_length)
 
 def ScheduleQuarterFinals():
   """
