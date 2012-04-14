@@ -404,7 +404,7 @@ def GetTopTwoTeamsFromMatch(match_no):
   
   if match_no not in range(matches_len):
     print """[schedule-finals] FATAL ERROR - somehow GetTopTwoTeamsFromMatch was called with match_no = {0}, 
-              which is out of range!""".format(matchs_no)
+              which is out of range!""".format(match_no)
     sys.exit(1)
   
   match = scheduler.match_from_ms(r.lindex("org.srobo.matches", match_no))
@@ -525,7 +525,7 @@ def ScheduleFinal():
   # get the top two teams from E and F
   top_teams = []
   for i in range(2):
-    temp = GetTopTwoTeamsFromMatch(len_matches - i)
+    temp = GetTopTwoTeamsFromMatch(len_matches - (i + 1))
     top_teams.append(temp)
   
   # top teams is a 2 list of 2 lists containing the top two teams from each match
