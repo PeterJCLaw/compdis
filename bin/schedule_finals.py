@@ -80,29 +80,36 @@ def GetGameScore(tla, match_no):
      
     return -1
                   
+    print "Getting " + tla + "'s score from match {0]...".format(match_no)
     team_zone = GetTeamZone(tla, match_no)
-    
+        
     if team_zone == -1:
+      print tla + " didn't play in this match, so scored 0 in this match"
       return 0
     else:    
-      return r.get("org.srobo.scores.match.{0}.{1}.game_points".format(match_no, team_zone))
+      temp = r.get("org.srobo.scores.match.{0}.{1}.game_points".format(match_no, team_zone))
+      print tla " scored {0} points in this match".format(temp)
+      return temp
       
 def GetLeagueScore(tla):
   """
   returns the league score of team tla
   """
-  return r.get("org.srobo.scores.team." + tla) 
+  temp = r.get("org.srobo.scores.team." + tla) 
+  print tla + " have gained {0} total league points so far"
   
 def GetTotalGameScore(tla):   
   """ 
   returns the total game score of team tla
   """
+  print "Getting total game score for team " + tla
   len_matches = r.llen("org.srobo.matches")
   
   total = 0
   for i in range(len_matches):
     total += GetGameScore(tla, i)
-    
+  
+  print tla + " have score {0} total game points thus far".format(total)  
   return total
 
 def ResolveDraws(tla_list, teams_wanted, match_no = -1):
