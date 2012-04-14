@@ -195,8 +195,14 @@ def calc_league_points(pos_map):
 
 	for pos, zones in pos_map.iteritems():
 		# max points is 4, add one because pos is 1-indexed
-		# TODO: fix tie scoring
 		points = (4 + 1) - pos
+		# Now that we have the value for this position if it were not a tie,
+		# we need to allow for ties. In case of a tie, the available points
+		# for all the places used are shared by all those thus placed.
+		# Eg: three first places get 3pts each (4+3+2)/3.
+		# Rather than generate a list and average it, it's quicker to just
+		# do some maths using the max value and the length of the list
+		points = points - ( (len(zones) - 1) / 2.0 )
 		for z in zones:
 			lpoints[z] = points
 
