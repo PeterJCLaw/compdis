@@ -369,12 +369,17 @@ I need {1} teams\n For completeness' sake, I shall print out their game, league 
       
       if len(input_str) in range(3,5):
         # try to find it in our list:
+        success = False
         for (tla, a, b, c) in big_tuples:
           if tla == input_str:
             teams_proceeding.append(tla)
             print "Added " + tla + " to the teams PROCEEDING!"
+            success = True
             teams_entered += 1
-            continue          
+            break
+        
+        if success:
+          continue         
       
       print "'" + input_str + "' is not a (valid) TLA in the list I gave you, please try again."     
   
