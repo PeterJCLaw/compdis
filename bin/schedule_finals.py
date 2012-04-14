@@ -237,7 +237,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     for item in tuple_list:
       progressing_teams.append(item)      
       
-    print "After stage: " + stage_name + " there are {0} teams competing for {1} positions".format(len(progressing_teams), teams_wanted)
+    print "After considering " + stage_name + " there are {0} teams competing for {1} positions".format(len(progressing_teams), teams_wanted)
     
     teams = ''
     for (score, tla) in dropped_teams:
