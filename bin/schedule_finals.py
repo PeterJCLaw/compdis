@@ -77,23 +77,27 @@ def GetGameScore(tla, match_no):
     if match == None:
       print "[sched_finals.GetGameScore.GetTeamZone] Match {0} does not exist - critical error".format(match_no)
       sys.exit(5)
+    else:
+      print match 
       
     for i in range(len(match["teams"])):
       if match["teams"][i] == tla:
+        print tla + " were in zone {0} for match {1}".format(i, match_no)        
         return i          
      
+    print tla + " didn't play in match {0}".format(match_no)
     return -1
                   
-    print "Getting " + tla + "'s score from match {0]...".format(match_no)
-    team_zone = GetTeamZone(tla, match_no)
+  print "Getting " + tla + "'s score from match {0}...".format(match_no)
+  team_zone = GetTeamZone(tla, match_no)
         
-    if team_zone == -1:
-      print tla + " didn't play in this match, so scored 0 in this match"
-      return 0
-    else:    
-      temp = r.get("org.srobo.scores.match.{0}.{1}.game_points".format(match_no, team_zone))
-      print tla + " scored {0} points in this match".format(temp)
-      return temp
+  if team_zone == -1:
+    print tla + " didn't play in this match, so scored 0 in this match"
+    return 0
+  else:    
+    temp = r.hget("org.srobo.scores.match.{0}.{1}".format(match_no, team_zone), "game_points")
+    print tla + " scored {0} points in this match".format(temp)
+    return temp
       
 def GetLeagueScore(tla):
   """
@@ -111,7 +115,12 @@ def GetTotalGameScore(tla):
   
   total = 0
   for i in range(len_matches):
-    total += GetGameScore(tla, i)
+    temp = GetGameScore(tla, i)
+    
+    s = raw_input()
+    print tla + " scored {0} in match {1}".format(temp, i)
+    
+    total = total + temp
   
   print tla + " have score {0} total game points thus far".format(total)  
   return total
