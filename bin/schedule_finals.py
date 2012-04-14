@@ -113,6 +113,9 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   teams_wanted is unrestricted, OR
   an index in org.sobo.matches, in which case teams_wanted must be <=2  
   """
+  def CreateTuple(score, tla):
+    return (score, tla)
+    
   def GetScoreOfTuple(a_tuple):
       return a_tuple[0]
       
@@ -176,7 +179,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
     print "Using game score from given match first"
     
     for tla in tla_list:
-      tuple_list.append((GetGameScore(tla, match_no), tla))
+      tuple_list.append(CreateTuple(GetGameScore(tla, match_no), tla))
       
     tuple_list = RemoveTeams(tuple_list, teams_wanted, "match score")
     
@@ -185,13 +188,13 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   else:
     # need to setup the tuple_list correctly for league points (score will be filled in shortly)
     for tla in tla_list:
-      tuple_list.append((0, tla))
+      tuple_list.append(CreateTuple(0, tla))
           
   # Now on league points
   
   print "Now using league points on the remaining {0} teams".format(len(tuple_list))
   for i in range(len(tuple_list)):
-    tuple_list[i][0] = GetLeagueScore(tuple_list[i][1])
+    tuple_list[i] = CreateTuple(GetLeagueScore(tuple_list[i][1]), tuple_list[i][1])
    
   tuple_list = RemoveTeams(tuple_list, teams_wanted, "league points")
   
@@ -201,7 +204,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   # Now on total game points
   print "Now using total game points on the remaining {0} teams".format(len(tuple_list))
   for i in range(len(tuple_list)):
-    tuple_list[i][0] = GetTotalGameScore(tuple_list[i][1], "Total game (match pts) score")
+    tuple_list[i] = CreateTuple(GetTotalGameScore(tuple_list[i][1]), tuple_list[i][1])
    
   tuple_list = RemoveTeams(tuple_list, teams_wanted, "total game points")
   
