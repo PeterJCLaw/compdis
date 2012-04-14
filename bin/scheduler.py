@@ -159,7 +159,7 @@ def main():
     lg = ps.listen()
     for message in lg:
         paused = r.get("org.srobo.time.paused") == "True"
-        print paused
+        print "org.srobo.time.paused = " + str(paused)
         if paused:
             now = int(r.get("org.srobo.time.real"))
             start = int(r.get("org.srobo.time.start"))
