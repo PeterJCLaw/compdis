@@ -506,6 +506,8 @@ def ScheduleSemiFinals():
     
     match_start_time += (scheduler.match_length * 60)
     
+    matches.append(m)
+    
   AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 6)  
   print "[schedule-finals] Done scheduling the SEMI FINALS"
@@ -539,6 +541,8 @@ def ScheduleFinal():
     m = create_match(match_start_time, teams, 0)
     
     match_start_time += scheduler.match_length * 60
+    
+    matches.append(m)
     
   AppendToMatches(matches)
   r.set("org.srobo.matches.knockout_matches_scheduled", 7)  
