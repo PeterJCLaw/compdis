@@ -9,6 +9,9 @@ if __name__ == "__main__":
     x = raw_input()
     if x == "y":
         print "gogo"
+        keys = r.keys("org.srobo.*")
+        for x in keys:
+            r.delete(x)
         r.delete("org.srobo.matches")
         r.delete("org.srobo.time.start")
         dt = datetime.datetime.strptime('Sat 14 Apr 2012 09:00:00 AM BST','%a %d %b %Y %H:%M:%S %p %Z')
