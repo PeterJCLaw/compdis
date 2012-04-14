@@ -538,7 +538,7 @@ def ScheduleFinal():
     teams = []
     for team_index in range(1):
       for top_team_index in range(2):
-        teams.append(top_teams[team_index * 2][0][top_team_index])
+        teams.append(top_teams[team_index * 2][top_team_index][0])
         
     # teams now holds the four teams selected for match indicated by match_counter    
       
