@@ -72,31 +72,36 @@ def GetGameScore(tla, match_no):
     returns the zone this team occupied during the given match,
     -1 if the team wasn't in the match
     """
-    match = match_from_ms(r.lindex("org.srobo.matches", match_no))
+    match = scheduler.match_from_ms(r.lindex("org.srobo.matches", match_no))
     
     if match == None:
       print "[sched_finals.GetGameScore.GetTeamZone] Match {0} does not exist - critical error".format(match_no)
       sys.exit(5)
-    else:
-      print match 
       
     for i in range(len(match["teams"])):
       if match["teams"][i] == tla:
-        print tla + " were in zone {0} for match {1}".format(i, match_no)        
+        #print tla + " were in zone {0} for match {1}".format(i, match_no)        
         return i          
      
-    print tla + " didn't play in match {0}".format(match_no)
+   # print tla + " didn't play in match {0}".format(match_no)
     return -1
                   
-  print "Getting " + tla + "'s score from match {0}...".format(match_no)
+  #print "Getting " + tla + "'s score from match {0}...".format(match_no)
   team_zone = GetTeamZone(tla, match_no)
         
   if team_zone == -1:
-    print tla + " didn't play in this match, so scored 0 in this match"
+    #print tla + " didn't play in this match, so scored 0 in this match"
     return 0
   else:    
     temp = r.hget("org.srobo.scores.match.{0}.{1}".format(match_no, team_zone), "game_points")
-    print tla + " scored {0} points in this match".format(temp)
+    
+    if temp == None:
+      print "failed to get score for match {0}, zone {1}".format(match_no, team_zone)
+      sys.exit(5)
+    else:
+      temp = int(temp)
+    
+    #print tla + " scored {0} points in this match".format(temp)
     return temp
       
 def GetLeagueScore(tla):
@@ -105,24 +110,24 @@ def GetLeagueScore(tla):
   """
   temp = r.get("org.srobo.scores.team." + tla) 
   print tla + " have gained {0} total league points so far".format(temp)
+  return int(temp)
   
 def GetTotalGameScore(tla):   
   """ 
   returns the total game score of team tla
   """
-  print "Getting total game score for team " + tla
+  #print "Getting total game score for team " + tla
   len_matches = r.llen("org.srobo.matches")
   
   total = 0
   for i in range(len_matches):
     temp = GetGameScore(tla, i)
-    
-    s = raw_input()
-    print tla + " scored {0} in match {1}".format(temp, i)
+        
+    #print tla + " scored {0} in match {1}".format(temp, i)
     
     total = total + temp
   
-  print tla + " have score {0} total game points thus far".format(total)  
+  #print tla + " have score {0} total game points thus far".format(total)  
   return total
 
 def ResolveDraws(tla_list, teams_wanted, match_no = -1):
@@ -242,9 +247,9 @@ I need {1} teams\n For completeness' sake, I shall print out their game, league 
   # (TLA, game points, league points, total game points)
   for (total_game_score, tla) in tuple_list:
     if match_no == -1:
-      big_tuples.append((tla, 0, GetLeagueScore(tla), GetTotalGameScore(tla)))
+      big_tuples.append((tla, "0", str(GetLeagueScore(tla)), str(GetTotalGameScore(tla))))
     else:
-      big_tuples.append((tla, GetGameScore(tla, match_no), GetLeagueScore(tla), GetTotalGameScore(tla)))
+      big_tuples.append((tla, str(GetGameScore(tla, match_no)), str(GetLeagueScore(tla)), str(GetTotalGameScore(tla))))
   
   print "Team TLA    Game Pts    League Pts    Total Game Pts"
     
