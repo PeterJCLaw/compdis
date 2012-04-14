@@ -9,6 +9,7 @@ if __name__ == "__main__":
     for message in lg:
         time = int(r.get("org.srobo.time.real"))
         keys = r.zrange("org.srobo.schedule", 0,-1)
+        have_set = False
         for key in keys:
             ev_start = int(r.get("org.srobo.schedule." + key + ".start"))
             ev_end   = int(r.get("org.srobo.schedule." + key + ".end"))
@@ -16,3 +17,7 @@ if __name__ == "__main__":
             if time > ev_start and time < ev_end:
                 state = r.get("org.srobo.schedule." + key + ".state")
                 r.set("org.srobo.event.state", state)
+                have_set = True
+                print "have set"
+        if not have_set:
+            r.set("org.srobo.event.state", None)
