@@ -491,7 +491,6 @@ def ScheduleSemiFinals():
     temp = GetTopTwoTeamsFromMatch(len_matches - (4 - i))
     top_teams.append(temp)
   
-  print top_teams
   # top_teams contains the top two teams from matched A..D in order (list of lists)
   match_start_time = GetStartTimeOfMatch(4)
   
@@ -527,8 +526,7 @@ def ScheduleFinal():
   top_teams = []
   for i in range(2):
     temp = GetTopTwoTeamsFromMatch(i)
-    for item in temp:
-      top_teams.append(item)
+    top_teams.append(temp)
   
   # top teams is a 2 list of 2 lists containing the top two teams from each match
   match_start_time = GetStartTimeOfMatch(7)
@@ -536,9 +534,9 @@ def ScheduleFinal():
   matches = []
   for match_counter in range(1):
     teams = []
-    for team_index in range(1):
+    for team_index in range(2):
       for top_team_index in range(2):
-        teams.append(top_teams[team_index * 2][top_team_index])
+        teams.append(top_teams[team_index][top_team_index])
         
     # teams now holds the four teams selected for match indicated by match_counter    
       
