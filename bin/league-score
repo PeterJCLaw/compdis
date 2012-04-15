@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+"""
+Calculates the current league points & stores them.
+Can be run at any point, as it clears them first.
+"""
+
+import redis
+
+import scores
+
+
+HOST = "localhost"
+PORT = 6379
+DB = 0
+
+BASE = 'org.srobo'
+
+actor = redis.Redis(host=HOST, port=PORT, db=DB)
+
+# Remove the old data
+
+teams = actor.keys(BASE + '.scores.team.*')
+#print teams
+for t in teams:
+	actor.delete(t)
+
+matchKeys = actor.keys(BASE + '.scores.match.*')
+#print matchKeys
+
+matches = set()
+
+for key in matchKeys:
+	# Store that this match exists
+	m = key.split('.')[-2]
+	matches.add(m)
+	actor.hset(key, 'league_points', 0.0)
+
+#print matches
+
+# Figure out the new data
+
+for m in matches:
+	scores.match_rank(m, False)
