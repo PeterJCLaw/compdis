@@ -49,6 +49,7 @@ def print_match(match):
 		print('\tZone:   {0}'.format(zone['tzone']))
 		print('\tBucket: {0}'.format(zone['tbucket']))
 		print('\tNo. Buckets: {0}'.format(zone['nbuckets']))
+		print('\tDisqualified: {0}'.format(zone.get('disqualified', False)))
 
 def results():
 	while True:
@@ -75,6 +76,15 @@ def val_entry(mod,string,ori):
 				res = int(str)
 			except ValueError:
 				print('Invalid number, please try again')
+	return res
+
+def bool_entry(mod, string, ori):
+	str = raw_input(string)
+	if str == '' and mod is True:
+		res = ori
+	else:
+		res = str.lower() == 'y'
+
 	return res
 
 def modify(mod):
@@ -136,10 +146,14 @@ def zone_entry(mod,match,z,zone):
 	tzone = val_entry(mod,'\tZone: ',zone['tzone'])
 	tbucket = val_entry(mod,'\tBucket: ',zone['tbucket'])
 	nbuckets = val_entry(mod,'\tNo. Buckets: ',zone['nbuckets'])
+	dsq_orig = zone.get('disqualified', False)	# missing means not dsq
+	dsq = bool_entry(mod, '\tDisqualify [y/N]: ', dsq_orig)
 	if actor.exists('{0}.scores.match.{1}.{2}'.format(BASE,match,z)):
-		if trobot == zone['trobot'] and tzone == zone['tzone'] and tbucket == zone['tbucket'] and nbuckets == zone['nbuckets']:
+		if trobot == zone['trobot'] and tzone == zone['tzone'] and tbucket == zone['tbucket'] and nbuckets == zone['nbuckets'] and dsq == dsq_orig:
 			return False
-	actor.hmset('{0}.scores.match.{1}.{2}'.format(BASE,match,z),{'trobot':trobot,'tzone':tzone,'tbucket':tbucket,'nbuckets':nbuckets,'game_points':game_points([match,z,trobot,tzone,tbucket,nbuckets])})
+	data = {'trobot':trobot,'tzone':tzone,'tbucket':tbucket,'nbuckets':nbuckets,'game_points':game_points([match,z,trobot,tzone,tbucket,nbuckets])}
+	data['disqualified'] = dsq
+	actor.hmset('{0}.scores.match.{1}.{2}'.format(BASE,match,z),data)
 	return True
 
 def check_match(match):
