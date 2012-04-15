@@ -151,6 +151,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   # test we haven't gone insane:
   if len(tla_list) < teams_wanted:
     print "[schedule_finals] Trying to get {0} teams from {1} candidates!! ERROR".format(teams_wanted, len(tla_list))
+    sys.exit(6)
   elif len(tla_list) == teams_wanted:
     # trivial case
     return tla_list
