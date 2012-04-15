@@ -31,10 +31,10 @@ SCHEDULED_MATCHES = [
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 WINNING_SCORES = [
-    {"tzone": 0, "trobot": 0, "tbucket": 0, "nbuckets": 2}, # 7 tokens
-    {"tzone": 0, "trobot": 0, "tbucket": 0, "nbuckets": 2}, # 3 tokens
-    {"tzone": 0, "trobot": 0, "tbucket": 0, "nbuckets": 0}, # 7
-    {"tzone": 0, "trobot": 0, "tbucket": 0, "nbuckets": 0}] # 3
+    {"tzone": 1, "trobot": 3, "tbucket": 3, "nbuckets": 2}, # 7 tokens
+    {"tzone": 0, "trobot": 0, "tbucket": 1, "nbuckets": 2}, # 3 tokens
+    {"tzone": 4, "trobot": 3, "tbucket": 0, "nbuckets": 0}, # 7
+    {"tzone": 3, "trobot": 0, "tbucket": 0, "nbuckets": 0}] # 3
     
 LEAGUE_POINTS = [4, 3, 2, 1]
 
