@@ -110,7 +110,7 @@ def GetLeagueScore(tla):
   """
   temp = r.get("org.srobo.scores.team." + tla) 
  # print tla + " have gained {0} total league points so far".format(temp)
-  return int(temp)
+  return float(temp)
   
 def GetTotalGameScore(tla):   
   """ 
@@ -447,10 +447,8 @@ def GetStartTimeOfMatch(knockout_match_no):
       break
       
   if match_start_time == None:
-    #print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
-    #sys.exit(2)
-    # TEMP FIXME
-    match_start_time = 0
+    print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
+    sys.exit(2)    
            
   # now have the desired start realtime for the given match_no.
   # need to magic this into competition time:
