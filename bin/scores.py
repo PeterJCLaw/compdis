@@ -176,10 +176,11 @@ def check_match(match):
 	if buckets > max_buckets:
 		print('WARNING! Too many buckets in this match! ({0})'.format(buckets))
 
-def calc_positions(zpoints):
+def calc_positions(zpoints, dsq_list):
 	"""
 	A function to work out the placings of zones in a game, given the game points.
 	@param zpoints: a dict of zone number to game points.
+	@param dsq_list: a list of zones that should be considered below last.
 	@returns: a dict of position to array of zone numbers.
 	"""
 
@@ -187,6 +188,8 @@ def calc_positions(zpoints):
 	points_map = {}
 
 	for z, p in zpoints.iteritems():
+		if z in dsq_list:
+			p = -1
 		if not points_map.has_key(p):
 			points_map[p] = []
 		points_map[p].append(z)
@@ -198,16 +201,24 @@ def calc_positions(zpoints):
 
 	return pos_map
 
-def calc_league_points(pos_map):
+def calc_league_points(pos_map, dsq_list):
 	"""
 	A function to work out the league points for each zone, given the rankings within that game.
 	@param pos_map: a dict of position to array of zone numbers.
+	@param dsq_list: a list of zones that shouldn't be awarded league points.
 	@returns: a dict of zone number to league points.
 	"""
 
 	lpoints = {}
 
 	for pos, zones in pos_map.iteritems():
+		# remove any that are dsqaulified
+		# note that we do this before working out the ties, so that any
+		# dsq tie members are removed from contention
+		zones = [ z for z in zones if z not in dsq_list ]
+		if len(zones) == 0:
+			continue
+
 		# max points is 4, add one because pos is 1-indexed
 		points = (4 + 1) - pos
 		# Now that we have the value for this position if it were not a tie,
@@ -220,33 +231,46 @@ def calc_league_points(pos_map):
 		for z in zones:
 			lpoints[z] = points
 
+	# those that were dsq get 0
+	for z in dsq_list:
+		lpoints[z] = 0.0
+
 	return lpoints
 
-def get_league_points(zpoints):
+def get_league_points(zpoints, dsq):
 	"""
 	A function to work out the league points for each zone, given the game points.
 	This is a thin convenience wrapper around `calc_positions` and `calc_league_points`.
 	@param zpoints: a dict of zone number to game points.
+	@param dsq: a list of zones that shouldn't be awarded league points.
 	@returns: a dict of zone number to league points.
 	"""
-	pos_map = calc_positions(zpoints)
-	lpoints = calc_league_points(pos_map)
+	pos_map = calc_positions(zpoints, dsq)
+	lpoints = calc_league_points(pos_map, dsq)
 	return lpoints
 
 def match_rank(match,sub):
-	zpoints = _get_zone_points(match)
-	lpoints = get_league_points(zpoints)
+	zpoints, dsq = _get_zone_data(match)
+	lpoints = get_league_points(zpoints, dsq)
 	_store_league_points(match, sub, lpoints)
 
-def _get_zone_points(match):
+def _get_zone_data(match):
+	"""
+	@returns: A tuple of:
+		a dict that contains the points for each zone
+		a list that contains any zones that were disqualified
+	"""
 	zpoints = dict()
+	dsq = []
 	for z in range(4):
 		zone = actor.hgetall('{0}.scores.match.{1}.{2}'.format(BASE,match,z))
 		if zone != {}:
 			zpoints['{0}'.format(z)] = game_points([match,z,zone['trobot'],zone['tzone'],zone['tbucket'],zone['nbuckets']])
+			if zone.get('disqualified', None) == "True":
+				dsq.append('{0}'.format(z))
 		else:
 			zpoints['{0}'.format(z)] = -1
-	return zpoints
+	return zpoints, dsq
 
 def _store_league_points(match, sub, lpoints):
 	mat = split_match(actor.lindex('{0}.matches'.format(BASE), match))
