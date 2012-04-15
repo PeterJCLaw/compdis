@@ -435,19 +435,11 @@ def GetStartTimeOfMatch(knockout_match_no):
   Returns the start time in competition time for the given knockout_match_no,
   counting from zero.
   """
-  events_len = r.llen("org.srobo.schedule")
-  match_start_time = None
-
-  for i in range(events_len):
-    event = r.lindex("org.srobo.events", i)
-    
-    event_name = r.get("org.srobo.events." + event + ".name")
-    
-    if event_name == "final":
-      first_match_start_time = r.get("org.srobo.events." + event + ".start")
-      break
-      
-  if match_start_time == None:
+  first_match_start_time = None
+  
+  first_match_start_time = r.get("org.srobo.schedule.final.start")
+       
+  if first_match_start_time == None:
     print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
     sys.exit(2)    
            
