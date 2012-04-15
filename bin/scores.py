@@ -240,7 +240,31 @@ def _store_league_points(match, sub, lpoints):
 	scored = 4
 	for z, pts in lpoints.iteritems():
 		if sub is True:
-			actor.decr('{0}.scores.team.{1}'.format(BASE, mat['teamz{0}'.format(z)]), pts)
+			pts *= -1.0
+			_float_incr('{0}.scores.team.{1}'.format(BASE, mat['teamz{0}'.format(z)]), pts)
 		else:
-			actor.incr('{0}.scores.team.{1}'.format(BASE, mat['teamz{0}'.format(z)]), pts)
+			_float_incr('{0}.scores.team.{1}'.format(BASE, mat['teamz{0}'.format(z)]), pts)
 			actor.hset('{0}.scores.match.{1}.{2}'.format(BASE, match, z),'league_points', pts)
+
+def _float_incr(key, incr):
+	"""
+	Increments a redis (float) key value by a given float.
+	The float may be negaitve to achieve decrements.
+	"""
+
+	"""
+	Currently, this is a very bad implementation, as we are unable to
+	get a value inside the atomic operation.
+	"""
+
+	value = actor.get(key)
+	with actor.pipeline(transaction = True) as pipe:
+		try:
+			fvalue = float(value)
+		except TypeError:
+			"it was empty, thus None"
+			fvalue = 0.0
+
+		fvalue += incr
+		pipe.set(key, fvalue)
+		pipe.execute()
