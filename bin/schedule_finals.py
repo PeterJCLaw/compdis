@@ -110,7 +110,7 @@ def GetLeagueScore(tla):
   """
   temp = r.get("org.srobo.scores.team." + tla) 
  # print tla + " have gained {0} total league points so far".format(temp)
-  return int(temp)
+  return float(temp)
   
 def GetTotalGameScore(tla):   
   """ 
