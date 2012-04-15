@@ -1,0 +1,113 @@
+<html>
+    <head>
+        <title>Final Schedules</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    </head>
+    <body>
+        <table border="1">
+            <tr>
+                <th>Match</th>
+                <th>Zone 0</th>
+                <th>Zone 1</th>
+                <th>Zone 2</th>
+                <th>Zone 3</th>
+           </tr>
+           <tr>
+               <td>Quarter Final 0</td>
+               <td id="q0t0"></td>
+               <td id="q0t1"></td>
+               <td id="q0t2"></td>
+               <td id="q0t3"></td>
+           </tr>
+           <tr>
+               <td>Quarter Final 1</td>
+               <td id="q1t0"></td>
+               <td id="q1t1"></td>
+               <td id="q1t2"></td>
+               <td id="q1t3"></td>
+           </tr>
+           <tr>
+               <td>Quarter Final 2</td>
+               <td id="q2t0"></td>
+               <td id="q2t1"></td>
+               <td id="q2t2"></td>
+               <td id="q2t3"></td>
+           </tr>
+           <tr>
+               <td>Quarter Final 3</td>
+               <td id="q3t0"></td>
+               <td id="q3t1"></td>
+               <td id="q3t2"></td>
+               <td id="q3t3"></td>
+           </tr>
+           <tr>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+           </tr>
+           <tr>
+               <td>Semi Final 0</td>
+               <td id="s0t0"></td>
+               <td id="s0t1"></td>
+               <td id="s0t2"></td>
+               <td id="s0t3"></td>
+           </tr>
+           <tr>
+               <td>Semi Final 1</td>
+               <td id="s1t0"></td>
+               <td id="s1t1"></td>
+               <td id="s1t2"></td>
+               <td id="s1t3"></td>
+           </tr>
+           <tr>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+           </tr>
+           <tr>
+               <td>Final</td>
+               <td id="f0t0"></td>
+               <td id="f0t1"></td>
+               <td id="f0t2"></td>
+               <td id="f0t3"></td>
+           </tr>
+       </table>
+       <script type="text/javascript">
+           function make_finals(finals_list) {
+               console.log(finals_list)
+               for (var i = 0; i < finals_list.length; i++) {
+                   console.log(i)
+                   f = finals_list[i]
+                   f_s = ""
+                   if (i < 4) {
+                       f_s = "q" + i;
+                   } else if (i < 6) {
+                       f_s = "s" + (i-4);
+                   } else {
+                       f_s = "f" + 0
+                   }
+                   for (var j = 0; j < f.length; j++) {
+                       f_2_s = f_s +  "t" + j;
+                       console.log(f_2_s)
+                       $("#" + f_2_s).text(f[j])
+                   }
+                          
+               }
+           }
+           finals = []
+           finals.push(["a","b","c","d"])
+           finals.push(["e","f","g","h"])
+           finals.push(["i","j","k","l"])
+           finals.push(["a","b","c","d"])
+           finals.push(["a","b","c","d"])
+           finals.push(["e","f","g","h"])
+           finals.push(["i","j","k","l"])
+           make_finals(finals)
+    
+       </script>
+    </body>
+</html>
