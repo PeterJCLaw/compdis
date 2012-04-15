@@ -445,7 +445,7 @@ def GetStartTimeOfMatch(knockout_match_no):
            
   # now have the desired start realtime for the given match_no.
   # need to magic this into competition time:
-  first_knockout_match_start_time = match_start_time - int(r.get("org.srobo.time.start"))
+  first_knockout_match_start_time = first_match_start_time - int(r.get("org.srobo.time.start"))
 
   return first_knockout_match_start_time + (knockout_match_no * scheduler.match_length)
 
