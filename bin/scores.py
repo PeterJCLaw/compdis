@@ -220,7 +220,6 @@ def get_league_points(zpoints):
 	return lpoints
 
 def match_rank(match,sub):
-	print "\nmatch_rank"
 	zpoints = _get_zone_points(match)
 	lpoints = get_league_points(zpoints)
 	_store_league_points(match, sub, lpoints)
