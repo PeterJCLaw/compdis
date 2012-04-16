@@ -1,0 +1,167 @@
+<html>
+    <head>
+        <title>Final Schedules</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    </head>
+    <body>
+        <table border="1">
+            <tr>
+                <th>Match</th>
+                <th>Zone 0</th>
+                <th>Zone 1</th>
+                <th>Zone 2</th>
+                <th>Zone 3</th>
+           </tr>
+           <tr>
+               <td>Quarter Final 0</td>
+               <td id="q0t0"></td>
+               <td id="q0t1"></td>
+               <td id="q0t2"></td>
+               <td id="q0t3"></td>
+           </tr>
+           <tr>
+               <td>Quarter Final 1</td>
+               <td id="q1t0"></td>
+               <td id="q1t1"></td>
+               <td id="q1t2"></td>
+               <td id="q1t3"></td>
+           </tr>
+           <tr>
+               <td>Quarter Final 2</td>
+               <td id="q2t0"></td>
+               <td id="q2t1"></td>
+               <td id="q2t2"></td>
+               <td id="q2t3"></td>
+           </tr>
+           <tr>
+               <td>Quarter Final 3</td>
+               <td id="q3t0"></td>
+               <td id="q3t1"></td>
+               <td id="q3t2"></td>
+               <td id="q3t3"></td>
+           </tr>
+           <tr>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+           </tr>
+           <tr>
+               <td>Semi Final 0</td>
+               <td id="s0t0"></td>
+               <td id="s0t1"></td>
+               <td id="s0t2"></td>
+               <td id="s0t3"></td>
+           </tr>
+           <tr>
+               <td>Semi Final 1</td>
+               <td id="s1t0"></td>
+               <td id="s1t1"></td>
+               <td id="s1t2"></td>
+               <td id="s1t3"></td>
+           </tr>
+           <tr>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+               <td>x</td>
+           </tr>
+           <tr>
+               <td>Final</td>
+               <td id="f0t0"></td>
+               <td id="f0t1"></td>
+               <td id="f0t2"></td>
+               <td id="f0t3"></td>
+           </tr>
+       </table>
+       <script type="text/javascript">
+           function make_finals(finals_list) {
+               console.log(finals_list)
+               for (var i = 0; i < finals_list.length; i++) {
+                   console.log(i)
+                   f = finals_list[i]
+                   f_s = ""
+                   if (i < 4) {
+                       f_s = "q" + i;
+                   } else if (i < 6) {
+                       f_s = "s" + (i-4);
+                   } else {
+                       f_s = "f" + 0
+                   }
+                   for (var j = 0; j < f.length; j++) {
+                       f_2_s = f_s +  "t" + j;
+                       console.log(f_2_s)
+                       $("#" + f_2_s).text(f[j])
+                   }
+                          
+               }
+           }
+           finals = []
+           finals.push(["a","b","c","d"])
+           finals.push(["e","f","g","h"])
+           finals.push(["i","j","k","l"])
+           finals.push(["a","b","c","d"])
+           finals.push(["a","b","c","d"])
+           finals.push(["e","f","g","h"])
+           finals.push(["i","j","k","l"])
+//           make_finals(finals)
+    
+       </script>
+       <script type="text/javascript">
+		WEBDISHOST = 'localhost'
+		ws = new WebSocket('ws://' + WEBDISHOST + ':7379/.json');
+		ws.onopen = function() { ws.send(JSON.stringify(['PSUBSCRIBE','org.srobo.*'])); }
+		ws.onmessage = function(e) {
+			jsdata = $.parseJSON(e.data)['PSUBSCRIBE'];
+//			alert(jsdata[2])
+			if(jsdata[2] != 'org.srobo.matches.knockout_matches_scheduled')
+			{
+//				alert('returning')
+				return;
+			}
+			else
+			{
+//				alert('genning')
+				gen_score_json();
+			}
+		}
+		
+		function gen_score_json()
+		{
+			$.ajax({
+				url: 'http://' + WEBDISHOST + ':7379/GET/org.srobo.matches.knockout_matches_scheduled',
+				data: "format=json",
+				datatype: "json",
+				success: function(data1) {
+//					alert('stage1\n' + data1['GET'])
+					data1 = parseInt(data1['GET'])
+					$.ajax({
+						url: 'http://' + WEBDISHOST + ':7379/LRANGE/org.srobo.matches/-' + data1 + '/-1',
+						data: "format=json",
+						datatype: "json",
+						success: function(data) {
+//							alert('data: ' + data['LRANGE'])
+							data = $.parseJSON('[' + data['LRANGE'] + ']')
+//							alert(data)
+							var finalsmix = [];
+							for(var i = 0; i < data1; i++)
+							{
+								var int_mix = []
+								var inter = data[i]
+								for(var j = 0; j < 4; j++)
+								{
+									int_mix.push(inter['teams'][j]);
+								}
+								finalsmix.push(int_mix)
+							}
+							make_finals(finalsmix);
+						}
+					});
+				}
+			});
+		}
+       </script>
+    </body>
+</html>

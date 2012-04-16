@@ -110,7 +110,7 @@ def GetLeagueScore(tla):
   """
   temp = r.get("org.srobo.scores.team." + tla) 
  # print tla + " have gained {0} total league points so far".format(temp)
-  return int(temp)
+  return float(temp)
   
 def GetTotalGameScore(tla):   
   """ 
@@ -151,6 +151,7 @@ def ResolveDraws(tla_list, teams_wanted, match_no = -1):
   # test we haven't gone insane:
   if len(tla_list) < teams_wanted:
     print "[schedule_finals] Trying to get {0} teams from {1} candidates!! ERROR".format(teams_wanted, len(tla_list))
+    sys.exit(6)
   elif len(tla_list) == teams_wanted:
     # trivial case
     return tla_list
@@ -434,27 +435,17 @@ def GetStartTimeOfMatch(knockout_match_no):
   Returns the start time in competition time for the given knockout_match_no,
   counting from zero.
   """
-  events_len = r.llen("org.srobo.schedule")
-  match_start_time = None
-
-  for i in range(events_len):
-    event = r.lindex("org.srobo.events", i)
-    
-    event_name = r.get("org.srobo.events." + event + ".name")
-    
-    if event_name == "final":
-      first_match_start_time = r.get("org.srobo.events." + event + ".start")
-      break
-      
-  if match_start_time == None:
-    #print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
-    #sys.exit(2)
-    # TEMP FIXME
-    match_start_time = 0
+  first_match_start_time = None
+  
+  first_match_start_time = r.get("org.srobo.schedule.final.start")
+       
+  if first_match_start_time == None:
+    print "[schedule-finals] Your event schedule contains NO event named 'final'!!!"
+    sys.exit(2)    
            
   # now have the desired start realtime for the given match_no.
   # need to magic this into competition time:
-  first_knockout_match_start_time = match_start_time - int(r.get("org.srobo.time.start"))
+  first_knockout_match_start_time = int(first_match_start_time) - int(r.get("org.srobo.time.start"))
 
   return first_knockout_match_start_time + (knockout_match_no * scheduler.match_length)
 
