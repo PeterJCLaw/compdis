@@ -8,10 +8,12 @@ The data store itself is an instance of [redis](http://redis.io/),
 
 You'll need to install redis & the python bindings.
 On Ubuntu, this can be achieved using:
-~~
+
+~~~~
 $ sudo apt-get install redis-server
 $ sudo easy_install redis
-~~
+~~~~
+
 While the python bindings are available via the debian repos,
  they are very out of date, so using the easy-installed ones instead is required.
 
