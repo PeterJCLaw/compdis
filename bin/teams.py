@@ -33,8 +33,8 @@ if __name__ == "__main__":
         for x in teams:
             r.set("org.srobo.teams." + str(x["number"]) + ".tla", x["tla"])
             r.set("org.srobo.teams." + str(x["number"]) + ".org_name", x["real-name"])
-            r.set("org.srobo.score.teams." + str(x["tla"]), 0)
-        
+            r.set("org.srobo.scores.teams." + str(x["tla"]), 0)
+
     if len(sys.argv) == 4 and sys.argv[1] == "robotname":
         tla = sys.argv[2]
         description = sys.argv[3]
